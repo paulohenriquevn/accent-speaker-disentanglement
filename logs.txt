@@ -1,0 +1,606 @@
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+ 
+/usr/local/lib/python3.12/dist-packages/torch/backends/__init__.py:46: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+  self.setter(val)
+2026-02-11 18:34:49.379109: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-02-11 18:34:49.397918: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1770834889.420211   28795 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1770834889.427588   28795 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1770834889.446420   28795 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770834889.446442   28795 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770834889.446445   28795 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770834889.446446   28795 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2026-02-11 18:34:49.451248: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+/bin/sh: 1: sox: not found
+WARNING:sox:SoX could not be found!
+
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+    
+Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 60133.39it/s]
+Backbone features:   0%|          | 0/30 [00:00<?, ?it/s]
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /content/stage1_5/stage1_5/features/cli.py:36 in backbone                    │
+│                                                                              │
+│   33 @app.command()                                                          │
+│   34 def backbone(manifest: Path, text_json: Path, output: Path, checkpoint: │
+│   35 │   │   │    layers: List[str] = typer.Option(..., help="Layer names to │
+│ ❱ 36 │   extract_backbone_cli(manifest, text_json, output, checkpoint, layer │
+│   37                                                                         │
+│   38                                                                         │
+│   39 if __name__ == "__main__":                                              │
+│                                                                              │
+│ ╭─────────────────────── locals ────────────────────────╮                    │
+│ │ checkpoint = 'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice'   │                    │
+│ │     layers = [                                        │                    │
+│ │              │   'text_encoder_out',                  │                    │
+│ │              │   'decoder_block_04',                  │                    │
+│ │              │   'decoder_block_08',                  │                    │
+│ │              │   'pre_vocoder'                        │                    │
+│ │              ]                                        │                    │
+│ │   manifest = PosixPath('gen/manifest_syn.jsonl')      │                    │
+│ │     output = PosixPath('artifacts/features/backbone') │                    │
+│ │  text_json = PosixPath('data/texts.json')             │                    │
+│ ╰───────────────────────────────────────────────────────╯                    │
+│                                                                              │
+│ /content/stage1_5/stage1_5/features/backbone.py:231 in extract_backbone_cli  │
+│                                                                              │
+│   228 │   cfg = BackboneFeatureConfig(layers=layers)                         │
+│   229 │                                                                      │
+│   230 │   with BackboneFeatureExtractor(adapter, cfg) as extractor:          │
+│ ❱ 231 │   │   extractor.process(manifest, texts, output_dir)                 │
+│   232                                                                        │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │       adapter = <stage1_5.backbone.huggingface.HuggingFaceBackboneAdapt… │ │
+│ │                 object at 0x1290e6020b30>                                │ │
+│ │           cfg = BackboneFeatureConfig(                                   │ │
+│ │                 │   layers=[                                             │ │
+│ │                 │   │   'text_encoder_out',                              │ │
+│ │                 │   │   'decoder_block_04',                              │ │
+│ │                 │   │   'decoder_block_08',                              │ │
+│ │                 │   │   'pre_vocoder'                                    │ │
+│ │                 │   ],                                                   │ │
+│ │                 │   pooling='mean',                                      │ │
+│ │                 │   strict=True                                          │ │
+│ │                 )                                                        │ │
+│ │    checkpoint = 'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice'                   │ │
+│ │     extractor = <stage1_5.features.backbone.BackboneFeatureExtractor     │ │
+│ │                 object at 0x1290ddfb00b0>                                │ │
+│ │        layers = [                                                        │ │
+│ │                 │   'text_encoder_out',                                  │ │
+│ │                 │   'decoder_block_04',                                  │ │
+│ │                 │   'decoder_block_08',                                  │ │
+│ │                 │   'pre_vocoder'                                        │ │
+│ │                 ]                                                        │ │
+│ │      manifest = <stage1_5.data.manifest.Manifest object at               │ │
+│ │                 0x1290e65110d0>                                          │ │
+│ │ manifest_path = PosixPath('gen/manifest_syn.jsonl')                      │ │
+│ │    output_dir = PosixPath('artifacts/features/backbone')                 │ │
+│ │  text_entries = [                                                        │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't00',                                │ │
+│ │                 │   │   'text': 'Bom dia, obrigado por participar do     │ │
+│ │                 experimento.'                                            │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't01',                                │ │
+│ │                 │   │   'text': 'Hoje o tempo esta firme e o ceu esta    │ │
+│ │                 limpo.'                                                  │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't02',                                │ │
+│ │                 │   │   'text': 'A equipe avaliou o modelo em diferentes │ │
+│ │                 regioes.'                                                │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't03',                                │ │
+│ │                 │   │   'text': 'O objetivo e medir separabilidade de    │ │
+│ │                 sotaque e identidade.'                                   │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't04',                                │ │
+│ │                 │   │   'text': 'Leia a frase com voz neutra e ritmo     │ │
+│ │                 constante.'                                              │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't05',                                │ │
+│ │                 │   │   'text': 'A gravacao deve ser clara, sem ruido de │ │
+│ │                 fundo.'                                                  │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't06',                                │ │
+│ │                 │   │   'text': 'O cachorro correu pelo quintal com      │ │
+│ │                 alegria.'                                                │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't07',                                │ │
+│ │                 │   │   'text': 'A chuva começou no fim da tarde e parou │ │
+│ │                 cedo.'                                                   │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't08',                                │ │
+│ │                 │   │   'text': 'O professor explicou a tarefa com       │ │
+│ │                 paciencia.'                                              │ │
+│ │                 │   },                                                   │ │
+│ │                 │   {                                                    │ │
+│ │                 │   │   'text_id': 't09',                                │ │
+│ │                 │   │   'text': 'A menina abriu a janela para entrar     │ │
+│ │                 ar.'                                                     │ │
+│ │                 │   },                                                   │ │
+│ │                 │   ... +20                                              │ │
+│ │                 ]                                                        │ │
+│ │     text_json = PosixPath('data/texts.json')                             │ │
+│ │         texts = {                                                        │ │
+│ │                 │   't00': 'Bom dia, obrigado por participar do          │ │
+│ │                 experimento.',                                           │ │
+│ │                 │   't01': 'Hoje o tempo esta firme e o ceu esta         │ │
+│ │                 limpo.',                                                 │ │
+│ │                 │   't02': 'A equipe avaliou o modelo em diferentes      │ │
+│ │                 regioes.',                                               │ │
+│ │                 │   't03': 'O objetivo e medir separabilidade de sotaque │ │
+│ │                 e identidade.',                                          │ │
+│ │                 │   't04': 'Leia a frase com voz neutra e ritmo          │ │
+│ │                 constante.',                                             │ │
+│ │                 │   't05': 'A gravacao deve ser clara, sem ruido de      │ │
+│ │                 fundo.',                                                 │ │
+│ │                 │   't06': 'O cachorro correu pelo quintal com           │ │
+│ │                 alegria.',                                               │ │
+│ │                 │   't07': 'A chuva começou no fim da tarde e parou      │ │
+│ │                 cedo.',                                                  │ │
+│ │                 │   't08': 'O professor explicou a tarefa com            │ │
+│ │                 paciencia.',                                             │ │
+│ │                 │   't09': 'A menina abriu a janela para entrar ar.',    │ │
+│ │                 │   ... +20                                              │ │
+│ │                 }                                                        │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /content/stage1_5/stage1_5/features/backbone.py:205 in process               │
+│                                                                              │
+│   202 │   │   │   text = texts.get(entry.text_id)                            │
+│   203 │   │   │   if not text:                                               │
+│   204 │   │   │   │   raise KeyError(f"Missing text for id {entry.text_id}") │
+│ ❱ 205 │   │   │   feats = self.extract_entry(entry, text)                    │
+│   206 │   │   │   save_npz_feature(output_dir, entry.utt_id, feats)          │
+│   207                                                                        │
+│   208                                                                        │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │      entry = ManifestEntry(                                              │ │
+│ │              │   utt_id='syn_000000',                                    │ │
+│ │              │   path='gen/synthetic_audio/syn_000000.wav',              │ │
+│ │              │   speaker='ryan',                                         │ │
+│ │              │   accent='S',                                             │ │
+│ │              │   text_id='t00',                                          │ │
+│ │              │   source='synthetic'                                      │ │
+│ │              )                                                           │ │
+│ │   manifest = <stage1_5.data.manifest.Manifest object at 0x1290e65110d0>  │ │
+│ │ output_dir = PosixPath('artifacts/features/backbone')                    │ │
+│ │       self = <stage1_5.features.backbone.BackboneFeatureExtractor object │ │
+│ │              at 0x1290ddfb00b0>                                          │ │
+│ │       text = 'Bom dia, obrigado por participar do experimento.'          │ │
+│ │      texts = {                                                           │ │
+│ │              │   't00': 'Bom dia, obrigado por participar do             │ │
+│ │              experimento.',                                              │ │
+│ │              │   't01': 'Hoje o tempo esta firme e o ceu esta limpo.',   │ │
+│ │              │   't02': 'A equipe avaliou o modelo em diferentes         │ │
+│ │              regioes.',                                                  │ │
+│ │              │   't03': 'O objetivo e medir separabilidade de sotaque e  │ │
+│ │              identidade.',                                               │ │
+│ │              │   't04': 'Leia a frase com voz neutra e ritmo             │ │
+│ │              constante.',                                                │ │
+│ │              │   't05': 'A gravacao deve ser clara, sem ruido de         │ │
+│ │              fundo.',                                                    │ │
+│ │              │   't06': 'O cachorro correu pelo quintal com alegria.',   │ │
+│ │              │   't07': 'A chuva começou no fim da tarde e parou cedo.', │ │
+│ │              │   't08': 'O professor explicou a tarefa com paciencia.',  │ │
+│ │              │   't09': 'A menina abriu a janela para entrar ar.',       │ │
+│ │              │   ... +20                                                 │ │
+│ │              }                                                           │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /content/stage1_5/stage1_5/features/backbone.py:184 in extract_entry         │
+│                                                                              │
+│   181 │   │   self._buffers.clear()                                          │
+│   182 │   │                                                                  │
+│   183 │   │   inputs = self.adapter.prepare_inputs(entry, text)              │
+│ ❱ 184 │   │   _ = self.adapter.forward(inputs)                               │
+│   185 │   │                                                                  │
+│   186 │   │   feats: Dict[str, np.ndarray] = {}                              │
+│   187 │   │   # deterministic order: follow cfg.layers                       │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │  entry = ManifestEntry(                                                  │ │
+│ │          │   utt_id='syn_000000',                                        │ │
+│ │          │   path='gen/synthetic_audio/syn_000000.wav',                  │ │
+│ │          │   speaker='ryan',                                             │ │
+│ │          │   accent='S',                                                 │ │
+│ │          │   text_id='t00',                                              │ │
+│ │          │   source='synthetic'                                          │ │
+│ │          )                                                               │ │
+│ │ inputs = {                                                               │ │
+│ │          │   'input_ids': tensor([[   33,   316, 17733,    11, 69337,    │ │
+│ │          2123,  4154,  5182,   277,   653,                               │ │
+│ │          │   │     9342,    78,    13]]),                                │ │
+│ │          │   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, │ │
+│ │          1, 1]])                                                         │ │
+│ │          }                                                               │ │
+│ │   self = <stage1_5.features.backbone.BackboneFeatureExtractor object at  │ │
+│ │          0x1290ddfb00b0>                                                 │ │
+│ │   text = 'Bom dia, obrigado por participar do experimento.'              │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /content/stage1_5/stage1_5/backbone/huggingface.py:72 in forward             │
+│                                                                              │
+│    69 │                                                                      │
+│    70 │   def forward(self, inputs: Dict[str, torch.Tensor]) -> torch.Tensor │
+│    71 │   │   with torch.no_grad():                                          │
+│ ❱  72 │   │   │   return self.model(**inputs)                                │
+│    73 │                                                                      │
+│    74 │   def resolve_layer(self, alias: str) -> torch.nn.Module:            │
+│    75 │   │   if self._model_type != "qwen3_tts":                            │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ inputs = {                                                               │ │
+│ │          │   'input_ids': tensor([[   33,   316, 17733,    11, 69337,    │ │
+│ │          2123,  4154,  5182,   277,   653,                               │ │
+│ │          │   │     9342,    78,    13]]),                                │ │
+│ │          │   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, │ │
+│ │          1, 1]])                                                         │ │
+│ │          }                                                               │ │
+│ │   self = <stage1_5.backbone.huggingface.HuggingFaceBackboneAdapter       │ │
+│ │          object at 0x1290e6020b30>                                       │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py:1775 in   │
+│ _wrapped_call_impl                                                           │
+│                                                                              │
+│   1772 │   │   if self._compiled_call_impl is not None:                      │
+│   1773 │   │   │   return self._compiled_call_impl(*args, **kwargs)  # type: │
+│   1774 │   │   else:                                                         │
+│ ❱ 1775 │   │   │   return self._call_impl(*args, **kwargs)                   │
+│   1776 │                                                                     │
+│   1777 │   # torchrec tests the code consistency with the following code     │
+│   1778 │   # fmt: off                                                        │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │   args = ()                                                              │ │
+│ │ kwargs = {                                                               │ │
+│ │          │   'input_ids': tensor([[   33,   316, 17733,    11, 69337,    │ │
+│ │          2123,  4154,  5182,   277,   653,                               │ │
+│ │          │   │     9342,    78,    13]]),                                │ │
+│ │          │   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, │ │
+│ │          1, 1]])                                                         │ │
+│ │          }                                                               │ │
+│ │   self = Qwen3TTSForConditionalGeneration(                               │ │
+│ │            (talker): Qwen3TTSTalkerForConditionalGeneration(             │ │
+│ │          │   (model): Qwen3TTSTalkerModel(                               │ │
+│ │          │     (layers): ModuleList(                                     │ │
+│ │          │   │   (0-27): 28 x Qwen3TTSTalkerDecoderLayer(                │ │
+│ │          │   │     (self_attn): Qwen3TTSTalkerAttention(                 │ │
+│ │          │   │   │   (q_proj): Linear(in_features=2048,                  │ │
+│ │          out_features=2048, bias=False)                                  │ │
+│ │          │   │   │   (k_proj): Linear(in_features=2048,                  │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │   (v_proj): Linear(in_features=2048,                  │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │   (o_proj): Linear(in_features=2048,                  │ │
+│ │          out_features=2048, bias=False)                                  │ │
+│ │          │   │   │   (q_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)        │ │
+│ │          │   │   │   (k_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)        │ │
+│ │          │   │     )                                                     │ │
+│ │          │   │     (mlp): Qwen3TTSTalkerTextMLP(                         │ │
+│ │          │   │   │   (gate_proj): Linear(in_features=2048,               │ │
+│ │          out_features=6144, bias=False)                                  │ │
+│ │          │   │   │   (up_proj): Linear(in_features=2048,                 │ │
+│ │          out_features=6144, bias=False)                                  │ │
+│ │          │   │   │   (down_proj): Linear(in_features=6144,               │ │
+│ │          out_features=2048, bias=False)                                  │ │
+│ │          │   │   │   (act_fn): SiLUActivation()                          │ │
+│ │          │   │     )                                                     │ │
+│ │          │   │     (input_layernorm): Qwen3TTSRMSNorm((2048,),           │ │
+│ │          eps=1e-06)                                                      │ │
+│ │          │   │     (post_attention_layernorm): Qwen3TTSRMSNorm((2048,),  │ │
+│ │          eps=1e-06)                                                      │ │
+│ │          │   │   )                                                       │ │
+│ │          │     )                                                         │ │
+│ │          │     (norm): Qwen3TTSRMSNorm((2048,), eps=1e-06)               │ │
+│ │          │     (rotary_emb): Qwen3TTSTalkerRotaryEmbedding()             │ │
+│ │          │     (codec_embedding): Embedding(3072, 2048)                  │ │
+│ │          │     (text_embedding): Embedding(151936, 2048)                 │ │
+│ │          │   )                                                           │ │
+│ │          │   (text_projection): Qwen3TTSTalkerResizeMLP(                 │ │
+│ │          │     (linear_fc1): Linear(in_features=2048, out_features=2048, │ │
+│ │          bias=True)                                                      │ │
+│ │          │     (linear_fc2): Linear(in_features=2048, out_features=2048, │ │
+│ │          bias=True)                                                      │ │
+│ │          │     (act_fn): SiLUActivation()                                │ │
+│ │          │   )                                                           │ │
+│ │          │   (codec_head): Linear(in_features=2048, out_features=3072,   │ │
+│ │          bias=False)                                                     │ │
+│ │          │   (code_predictor):                                           │ │
+│ │          Qwen3TTSTalkerCodePredictorModelForConditionalGeneration(       │ │
+│ │          │     (model): Qwen3TTSTalkerCodePredictorModel(                │ │
+│ │          │   │   (layers): ModuleList(                                   │ │
+│ │          │   │     (0-4): 5 x Qwen3TTSDecoderLayer(                      │ │
+│ │          │   │   │   (self_attn): Qwen3TTSAttention(                     │ │
+│ │          │   │   │     (q_proj): Linear(in_features=1024,                │ │
+│ │          out_features=2048, bias=False)                                  │ │
+│ │          │   │   │     (k_proj): Linear(in_features=1024,                │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │     (v_proj): Linear(in_features=1024,                │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │     (o_proj): Linear(in_features=2048,                │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │     (q_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)      │ │
+│ │          │   │   │     (k_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)      │ │
+│ │          │   │   │   )                                                   │ │
+│ │          │   │   │   (mlp): Qwen3TTSTalkerTextMLP(                       │ │
+│ │          │   │   │     (gate_proj): Linear(in_features=1024,             │ │
+│ │          out_features=3072, bias=False)                                  │ │
+│ │          │   │   │     (up_proj): Linear(in_features=1024,               │ │
+│ │          out_features=3072, bias=False)                                  │ │
+│ │          │   │   │     (down_proj): Linear(in_features=3072,             │ │
+│ │          out_features=1024, bias=False)                                  │ │
+│ │          │   │   │     (act_fn): SiLUActivation()                        │ │
+│ │          │   │   │   )                                                   │ │
+│ │          │   │   │   (input_layernorm): Qwen3TTSRMSNorm((1024,),         │ │
+│ │          eps=1e-06)                                                      │ │
+│ │          │   │   │   (post_attention_layernorm):                         │ │
+│ │          Qwen3TTSRMSNorm((1024,), eps=1e-06)                             │ │
+│ │          │   │     )                                                     │ │
+│ │          │   │   )                                                       │ │
+│ │          │   │   (norm): Qwen3TTSRMSNorm((1024,), eps=1e-06)             │ │
+│ │          │   │   (rotary_emb): Qwen3TTSRotaryEmbedding()                 │ │
+│ │          │   │   (codec_embedding): ModuleList(                          │ │
+│ │          │   │     (0-14): 15 x Embedding(2048, 2048)                    │ │
+│ │          │   │   )                                                       │ │
+│ │          │     )                                                         │ │
+│ │          │     (lm_head): ModuleList(                                    │ │
+│ │          │   │   (0-14): 15 x Linear(in_features=1024,                   │ │
+│ │          out_features=2048, bias=False)                                  │ │
+│ │          │     )                                                         │ │
+│ │          │     (small_to_mtp_projection): Linear(in_features=2048,       │ │
+│ │          out_features=1024, bias=True)                                   │ │
+│ │          │   )                                                           │ │
+│ │            )                                                             │ │
+│ │          )                                                               │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py:1786 in   │
+│ _call_impl                                                                   │
+│                                                                              │
+│   1783 │   │   if not (self._backward_hooks or self._backward_pre_hooks or s │
+│   1784 │   │   │   │   or _global_backward_pre_hooks or _global_backward_hoo │
+│   1785 │   │   │   │   or _global_forward_hooks or _global_forward_pre_hooks │
+│ ❱ 1786 │   │   │   return forward_call(*args, **kwargs)                      │
+│   1787 │   │                                                                 │
+│   1788 │   │   result = None                                                 │
+│   1789 │   │   called_always_called_hooks = set()                            │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │         args = ()                                                        │ │
+│ │ forward_call = <bound method _forward_unimplemented of                   │ │
+│ │                Qwen3TTSForConditionalGeneration(                         │ │
+│ │                  (talker): Qwen3TTSTalkerForConditionalGeneration(       │ │
+│ │                │   (model): Qwen3TTSTalkerModel(                         │ │
+│ │                │     (layers): ModuleList(                               │ │
+│ │                │   │   (0-27): 28 x Qwen3TTSTalkerDecoderLayer(          │ │
+│ │                │   │     (self_attn): Qwen3TTSTalkerAttention(           │ │
+│ │                │   │   │   (q_proj): Linear(in_features=2048,            │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (k_proj): Linear(in_features=2048,            │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │   (v_proj): Linear(in_features=2048,            │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │   (o_proj): Linear(in_features=2048,            │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (q_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)  │ │
+│ │                │   │   │   (k_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)  │ │
+│ │                │   │     )                                               │ │
+│ │                │   │     (mlp): Qwen3TTSTalkerTextMLP(                   │ │
+│ │                │   │   │   (gate_proj): Linear(in_features=2048,         │ │
+│ │                out_features=6144, bias=False)                            │ │
+│ │                │   │   │   (up_proj): Linear(in_features=2048,           │ │
+│ │                out_features=6144, bias=False)                            │ │
+│ │                │   │   │   (down_proj): Linear(in_features=6144,         │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (act_fn): SiLUActivation()                    │ │
+│ │                │   │     )                                               │ │
+│ │                │   │     (input_layernorm): Qwen3TTSRMSNorm((2048,),     │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │     (post_attention_layernorm):                     │ │
+│ │                Qwen3TTSRMSNorm((2048,), eps=1e-06)                       │ │
+│ │                │   │   )                                                 │ │
+│ │                │     )                                                   │ │
+│ │                │     (norm): Qwen3TTSRMSNorm((2048,), eps=1e-06)         │ │
+│ │                │     (rotary_emb): Qwen3TTSTalkerRotaryEmbedding()       │ │
+│ │                │     (codec_embedding): Embedding(3072, 2048)            │ │
+│ │                │     (text_embedding): Embedding(151936, 2048)           │ │
+│ │                │   )                                                     │ │
+│ │                │   (text_projection): Qwen3TTSTalkerResizeMLP(           │ │
+│ │                │     (linear_fc1): Linear(in_features=2048,              │ │
+│ │                out_features=2048, bias=True)                             │ │
+│ │                │     (linear_fc2): Linear(in_features=2048,              │ │
+│ │                out_features=2048, bias=True)                             │ │
+│ │                │     (act_fn): SiLUActivation()                          │ │
+│ │                │   )                                                     │ │
+│ │                │   (codec_head): Linear(in_features=2048,                │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   (code_predictor):                                     │ │
+│ │                Qwen3TTSTalkerCodePredictorModelForConditionalGeneration( │ │
+│ │                │     (model): Qwen3TTSTalkerCodePredictorModel(          │ │
+│ │                │   │   (layers): ModuleList(                             │ │
+│ │                │   │     (0-4): 5 x Qwen3TTSDecoderLayer(                │ │
+│ │                │   │   │   (self_attn): Qwen3TTSAttention(               │ │
+│ │                │   │   │     (q_proj): Linear(in_features=1024,          │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │     (k_proj): Linear(in_features=1024,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (v_proj): Linear(in_features=1024,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (o_proj): Linear(in_features=2048,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (q_norm): Qwen3TTSRMSNorm((128,),           │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │     (k_norm): Qwen3TTSRMSNorm((128,),           │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │   )                                             │ │
+│ │                │   │   │   (mlp): Qwen3TTSTalkerTextMLP(                 │ │
+│ │                │   │   │     (gate_proj): Linear(in_features=1024,       │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   │   │     (up_proj): Linear(in_features=1024,         │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   │   │     (down_proj): Linear(in_features=3072,       │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (act_fn): SiLUActivation()                  │ │
+│ │                │   │   │   )                                             │ │
+│ │                │   │   │   (input_layernorm): Qwen3TTSRMSNorm((1024,),   │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │   (post_attention_layernorm):                   │ │
+│ │                Qwen3TTSRMSNorm((1024,), eps=1e-06)                       │ │
+│ │                │   │     )                                               │ │
+│ │                │   │   )                                                 │ │
+│ │                │   │   (norm): Qwen3TTSRMSNorm((1024,), eps=1e-06)       │ │
+│ │                │   │   (rotary_emb): Qwen3TTSRotaryEmbedding()           │ │
+│ │                │   │   (codec_embedding): ModuleList(                    │ │
+│ │                │   │     (0-14): 15 x Embedding(2048, 2048)              │ │
+│ │                │   │   )                                                 │ │
+│ │                │     )                                                   │ │
+│ │                │     (lm_head): ModuleList(                              │ │
+│ │                │   │   (0-14): 15 x Linear(in_features=1024,             │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │     )                                                   │ │
+│ │                │     (small_to_mtp_projection): Linear(in_features=2048, │ │
+│ │                out_features=1024, bias=True)                             │ │
+│ │                │   )                                                     │ │
+│ │                  )                                                       │ │
+│ │                )>                                                        │ │
+│ │       kwargs = {                                                         │ │
+│ │                │   'input_ids': tensor([[   33,   316, 17733,    11,     │ │
+│ │                69337,  2123,  4154,  5182,   277,   653,                 │ │
+│ │                │   │     9342,    78,    13]]),                          │ │
+│ │                │   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, │ │
+│ │                1, 1, 1, 1]])                                             │ │
+│ │                }                                                         │ │
+│ │         self = Qwen3TTSForConditionalGeneration(                         │ │
+│ │                  (talker): Qwen3TTSTalkerForConditionalGeneration(       │ │
+│ │                │   (model): Qwen3TTSTalkerModel(                         │ │
+│ │                │     (layers): ModuleList(                               │ │
+│ │                │   │   (0-27): 28 x Qwen3TTSTalkerDecoderLayer(          │ │
+│ │                │   │     (self_attn): Qwen3TTSTalkerAttention(           │ │
+│ │                │   │   │   (q_proj): Linear(in_features=2048,            │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (k_proj): Linear(in_features=2048,            │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │   (v_proj): Linear(in_features=2048,            │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │   (o_proj): Linear(in_features=2048,            │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (q_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)  │ │
+│ │                │   │   │   (k_norm): Qwen3TTSRMSNorm((128,), eps=1e-06)  │ │
+│ │                │   │     )                                               │ │
+│ │                │   │     (mlp): Qwen3TTSTalkerTextMLP(                   │ │
+│ │                │   │   │   (gate_proj): Linear(in_features=2048,         │ │
+│ │                out_features=6144, bias=False)                            │ │
+│ │                │   │   │   (up_proj): Linear(in_features=2048,           │ │
+│ │                out_features=6144, bias=False)                            │ │
+│ │                │   │   │   (down_proj): Linear(in_features=6144,         │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │   (act_fn): SiLUActivation()                    │ │
+│ │                │   │     )                                               │ │
+│ │                │   │     (input_layernorm): Qwen3TTSRMSNorm((2048,),     │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │     (post_attention_layernorm):                     │ │
+│ │                Qwen3TTSRMSNorm((2048,), eps=1e-06)                       │ │
+│ │                │   │   )                                                 │ │
+│ │                │     )                                                   │ │
+│ │                │     (norm): Qwen3TTSRMSNorm((2048,), eps=1e-06)         │ │
+│ │                │     (rotary_emb): Qwen3TTSTalkerRotaryEmbedding()       │ │
+│ │                │     (codec_embedding): Embedding(3072, 2048)            │ │
+│ │                │     (text_embedding): Embedding(151936, 2048)           │ │
+│ │                │   )                                                     │ │
+│ │                │   (text_projection): Qwen3TTSTalkerResizeMLP(           │ │
+│ │                │     (linear_fc1): Linear(in_features=2048,              │ │
+│ │                out_features=2048, bias=True)                             │ │
+│ │                │     (linear_fc2): Linear(in_features=2048,              │ │
+│ │                out_features=2048, bias=True)                             │ │
+│ │                │     (act_fn): SiLUActivation()                          │ │
+│ │                │   )                                                     │ │
+│ │                │   (codec_head): Linear(in_features=2048,                │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   (code_predictor):                                     │ │
+│ │                Qwen3TTSTalkerCodePredictorModelForConditionalGeneration( │ │
+│ │                │     (model): Qwen3TTSTalkerCodePredictorModel(          │ │
+│ │                │   │   (layers): ModuleList(                             │ │
+│ │                │   │     (0-4): 5 x Qwen3TTSDecoderLayer(                │ │
+│ │                │   │   │   (self_attn): Qwen3TTSAttention(               │ │
+│ │                │   │   │     (q_proj): Linear(in_features=1024,          │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │   │   │     (k_proj): Linear(in_features=1024,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (v_proj): Linear(in_features=1024,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (o_proj): Linear(in_features=2048,          │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (q_norm): Qwen3TTSRMSNorm((128,),           │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │     (k_norm): Qwen3TTSRMSNorm((128,),           │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │   )                                             │ │
+│ │                │   │   │   (mlp): Qwen3TTSTalkerTextMLP(                 │ │
+│ │                │   │   │     (gate_proj): Linear(in_features=1024,       │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   │   │     (up_proj): Linear(in_features=1024,         │ │
+│ │                out_features=3072, bias=False)                            │ │
+│ │                │   │   │     (down_proj): Linear(in_features=3072,       │ │
+│ │                out_features=1024, bias=False)                            │ │
+│ │                │   │   │     (act_fn): SiLUActivation()                  │ │
+│ │                │   │   │   )                                             │ │
+│ │                │   │   │   (input_layernorm): Qwen3TTSRMSNorm((1024,),   │ │
+│ │                eps=1e-06)                                                │ │
+│ │                │   │   │   (post_attention_layernorm):                   │ │
+│ │                Qwen3TTSRMSNorm((1024,), eps=1e-06)                       │ │
+│ │                │   │     )                                               │ │
+│ │                │   │   )                                                 │ │
+│ │                │   │   (norm): Qwen3TTSRMSNorm((1024,), eps=1e-06)       │ │
+│ │                │   │   (rotary_emb): Qwen3TTSRotaryEmbedding()           │ │
+│ │                │   │   (codec_embedding): ModuleList(                    │ │
+│ │                │   │     (0-14): 15 x Embedding(2048, 2048)              │ │
+│ │                │   │   )                                                 │ │
+│ │                │     )                                                   │ │
+│ │                │     (lm_head): ModuleList(                              │ │
+│ │                │   │   (0-14): 15 x Linear(in_features=1024,             │ │
+│ │                out_features=2048, bias=False)                            │ │
+│ │                │     )                                                   │ │
+│ │                │     (small_to_mtp_projection): Linear(in_features=2048, │ │
+│ │                out_features=1024, bias=True)                             │ │
+│ │                │   )                                                     │ │
+│ │                  )                                                       │ │
+│ │                )                                                         │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+TypeError: _forward_unimplemented() got an unexpected keyword argument 
+'input_ids'
+---------------------------------------------------------------------------
+CalledProcessError                        Traceback (most recent call last)
+/tmp/ipython-input-763084384.py in <cell line: 0>()
+----> 1 get_ipython().run_cell_magic('bash', '', 'set -euo pipefail\n\n# Acoustic features PASS\n# stage1_5 features acoustic data/manifest.jsonl artifacts/features/acoustic\n\n# ECAPA embeddings (set device to \'cuda\' if GPU is available) PASS\n# stage1_5 features ecapa data/manifest.jsonl artifacts/features/ecapa --device cuda\n\n# SSL features (HuBERT/WavLM via Hugging Face Transformers)\n# stage1_5 features ssl data/manifest.jsonl artifacts/features/ssl --model wavlm_large\n\n# Backbone hooks (requires synthetic manifest + text prompts)\nstage1_5 features backbone gen/manifest_syn.jsonl data/texts.json artifacts/features/backbone \\\n  "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice" \\\n  --layers text_encoder_out \\\n  --layers decoder_block_04 \\\n  --layers decoder_block_08 \\\n  --layers pre_vocoder\n\n\n')
+
+4 frames
+<decorator-gen-103> in shebang(self, line, cell)
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magics/script.py in shebang(self, line, cell)
+    243             sys.stderr.flush()
+    244         if args.raise_error and p.returncode!=0:
+--> 245             raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
+    246 
+    247     def _run_script(self, p, cell, to_close):
+
+CalledProcessError: Command 'b'set -euo pipefail\n\n# Acoustic features PASS\n# stage1_5 features acoustic data/manifest.jsonl artifacts/features/acoustic\n\n# ECAPA embeddings (set device to \'cuda\' if GPU is available) PASS\n# stage1_5 features ecapa data/manifest.jsonl artifacts/features/ecapa --device cuda\n\n# SSL features (HuBERT/WavLM via Hugging Face Transformers)\n# stage1_5 features ssl data/manifest.jsonl artifacts/features/ssl --model wavlm_large\n\n# Backbone hooks (requires synthetic manifest + text prompts)\nstage1_5 features backbone gen/manifest_syn.jsonl data/texts.json artifacts/features/backbone \\\n  "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice" \\\n  --layers text_encoder_out \\\n  --layers decoder_block_04 \\\n  --layers decoder_block_08 \\\n  --layers pre_vocoder\n\n\n'' returned non-zero exit status 1.

@@ -11,3 +11,15 @@
 - Pytest coverage for manifests, feature store, and probe runner (#0)
 - Google Colab notebook to run the full Stage 1.5 pipeline remotely (#0)
 - Setuptools configuration for clean editable installs (fix pip error on Colab) (#0)
+- Allow torch>=2.2 / torchaudio>=2.2 with SpeechBrain compatibility shim (#0)
+- Dataset preparation docs, CLI helpers, and Colab automation for downloading + manifest creation (#0)
+- Add huggingface_hub shim + upgrade to >=0.34, pin sentence-transformers<5.2, and align fsspec>=2025.3 for resolver stability (#0)
+
+### Changed
+- Replace the SSL extractor's s3prl dependency with Hugging Face Transformers to avoid SoX requirements (#0)
+
+### Fixed
+- Colab notebook now auto-generates default texts and uses consistent paths for backbone feature extraction (#0)
+- Backbone adapter now supports Qwen3-TTS checkpoints via qwen-tts registration to avoid config mapping errors (#0)
+- Backbone CLI now tolerates space-delimited layer lists to avoid hook resolution errors (#0)
+- Qwen3-TTS layer aliases now resolve to concrete module paths for backbone hooks (#0)

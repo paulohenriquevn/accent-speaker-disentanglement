@@ -20,7 +20,6 @@ gen/
 stage1_5.egg-info/
 
 # Data & datasets
-data/manifest.jsonl
 data/wav/
 data/splits/
 data/ref_embeddings/

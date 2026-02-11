@@ -67,8 +67,25 @@ class HuggingFaceBackboneAdapter:
         encoded = encoder(text=text, return_tensors="pt", padding=True)
         return {k: v.to(self.cfg.device) for k, v in encoded.items()}
 
-    def forward(self, inputs: Dict[str, torch.Tensor]) -> torch.Tensor:
+    def forward(self, inputs):
         with torch.no_grad():
+            if self._model_type == "qwen3_tts":
+                # inputs aqui NÃO é {"input_ids": ..., ...}
+                # inputs precisa ser algo como:
+                # {"mode":"custom_voice","text":..., "language":..., "speaker":..., "instruct":...}
+                mode = inputs.get("mode", "custom_voice")
+                if mode == "custom_voice":
+                    self.model.generate_custom_voice(
+                        text=inputs["text"],
+                        language=inputs.get("language", "Portuguese"),
+                        speaker=inputs.get("speaker", "ryan"),
+                        instruct=inputs.get("instruct"),
+                        non_streaming_mode=True,
+                        max_new_tokens=256,  # pequeno, só pra rodar rápido
+                    )
+                    return torch.empty(0)
+                raise ValueError(f"Unsupported qwen3_tts mode: {mode}")
+
             return self.model(**inputs)
 
     def resolve_layer(self, alias: str) -> torch.nn.Module:
