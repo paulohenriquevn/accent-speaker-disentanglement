@@ -49,6 +49,10 @@ stage1_5 = "stage1_5.cli:app"
 [tool.setuptools.package-data]
 stage1_5 = ["reporting/templates/*.md"]
 
+[tool.setuptools.packages.find]
+include = ["stage1_5*"]
+exclude = ["tests", "notebooks", "data", "config"]
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 pythonpath = ["."]

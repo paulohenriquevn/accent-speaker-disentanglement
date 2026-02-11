@@ -10,3 +10,4 @@
 - Automated heatmap generation and markdown report writer (#0)
 - Pytest coverage for manifests, feature store, and probe runner (#0)
 - Google Colab notebook to run the full Stage 1.5 pipeline remotely (#0)
+- Setuptools configuration for clean editable installs (fix pip error on Colab) (#0)
