@@ -11,6 +11,12 @@ import torch
 import torchaudio
 from tqdm import tqdm
 
+if not hasattr(torchaudio, "set_audio_backend"):
+    def _set_audio_backend(_: str) -> None:  # pragma: no cover
+        pass
+
+    torchaudio.set_audio_backend = _set_audio_backend  # type: ignore[attr-defined]
+
 from ..data import Manifest
 from ..utils.io import ensure_dir
 from .storage import save_npz_feature

@@ -25,17 +25,16 @@ except ImportError:  # pragma: no cover
 else:
     import inspect
 
-    if huggingface_hub is not None:
-        sig = inspect.signature(huggingface_hub.hf_hub_download)
-        if "use_auth_token" not in sig.parameters:
-            _hf_hub_download = huggingface_hub.hf_hub_download
+    sig = inspect.signature(huggingface_hub.hf_hub_download)
+    if "use_auth_token" not in sig.parameters:
+        _hf_hub_download = huggingface_hub.hf_hub_download
 
-            def hf_hub_download_wrapper(*args, use_auth_token=None, **kwargs):  # pragma: no cover
-                if use_auth_token is not None:
-                    kwargs.setdefault("token", use_auth_token)
-                return _hf_hub_download(*args, **kwargs)
+        def hf_hub_download_wrapper(*args, use_auth_token=None, **kwargs):  # pragma: no cover
+            if use_auth_token is not None:
+                kwargs.setdefault("token", use_auth_token)
+            return _hf_hub_download(*args, **kwargs)
 
-            huggingface_hub.hf_hub_download = hf_hub_download_wrapper  # type: ignore[attr-defined]
+        huggingface_hub.hf_hub_download = hf_hub_download_wrapper  # type: ignore[attr-defined]
 
 from speechbrain.inference.speaker import EncoderClassifier
 
