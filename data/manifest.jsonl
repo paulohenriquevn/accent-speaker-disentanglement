@@ -1,0 +1,4 @@
+{"utt_id": "spk01_NE_t01", "path": "data/wav/spk01/t01.wav", "speaker": "spk01", "accent": "NE", "text_id": "t01", "source": "real"}
+{"utt_id": "spk02_SE_t01", "path": "data/wav/spk02/t01.wav", "speaker": "spk02", "accent": "SE", "text_id": "t01", "source": "real"}
+{"utt_id": "spk01_NE_t01_synS", "path": "gen/syn_S/spk01_t01.wav", "speaker": "spk01", "accent": "NE", "text_id": "t01", "source": "syn_S"}
+{"utt_id": "spk01_NE_t01_rand", "path": "gen/syn_rand/spk01_t01_a.wav", "speaker": "spk01", "accent": "NE", "text_id": "t01", "source": "syn_rand"}
