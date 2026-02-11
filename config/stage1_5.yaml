@@ -9,7 +9,7 @@ experiment:
 
 paths:
   manifest: data/manifest.jsonl
-  splits: data/splits
+  splits_dir: data/splits
   artifacts_root: artifacts
   acoustic_features: artifacts/features/acoustic
   ecapa_embeddings: artifacts/features/ecapa
@@ -21,24 +21,35 @@ paths:
 
 audio:
   sample_rate: 16000
-  vad_threshold: 0.02
+  vad:
+    enabled: false
+    threshold: 0.02
 
 backbone:
-  provider: huggingface
-  checkpoint: "your-org/tts-backbone"
+  provider: qwen3_tts
+  checkpoint: "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
+  device: cuda
+  dtype: "bfloat16"
+  attn_implementation: "kernels-community/flash-attn3"
   layers:
-    - encoder_out
-    - block_04
-    - block_08
-    - decoder_pre_vocoder
+    - text_encoder_out
+    - decoder_block_04
+    - decoder_block_08
+    - pre_vocoder
   generation:
-    speaker_reference: data/ref_embeddings/spk.json
-    texts_path: data/texts
+    enabled: true
+    mode: custom_voice
+    language: Portuguese
+    speaker: "ryan"
+    texts_path: data/texts.jsonl
     output_dir: gen/synthetic_audio
+    max_new_tokens: 2048
 
 ssl:
   model: wavlm_large
   layers: [0, 6, 12, 18, 24]
+  device: cuda
+  pooling: mean
 
 probes:
   model: logistic_regression
@@ -47,20 +58,24 @@ probes:
   speaker_disjoint: true
   accent_metric: f1_macro
   speaker_metric: accuracy
+
   feature_spaces:
     - name: acoustic
       root: artifacts/features/acoustic
       keys: ["mfcc_mean", "mfcc_std", "f0_stats", "speaking_rate"]
       combine: true
       target: accent
+
     - name: ssl
       root: artifacts/features/ssl
       combine: false
-      target: joint
+      targets: [accent, speaker]
+
     - name: backbone
       root: artifacts/features/backbone
       combine: false
-      target: joint
+      targets: [accent, speaker]
+
     - name: ecapa
       root: artifacts/features/ecapa
       keys: ["ecapa"]
