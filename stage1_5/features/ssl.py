@@ -45,7 +45,7 @@ class SSLFeatureExtractor:
             from transformers import (
                 AutoConfig,
                 AutoFeatureExtractor,
-                AutoModelForAudioFeatureExtraction,
+                AutoModel,
                 AutoProcessor,
             )
         except ModuleNotFoundError as exc:  # pragma: no cover
@@ -64,7 +64,7 @@ class SSLFeatureExtractor:
             dtype = getattr(torch, self.cfg.torch_dtype)
 
         # Prefer the audio feature extraction model class (more consistent outputs for SSL models)
-        self.model = AutoModelForAudioFeatureExtraction.from_pretrained(
+        self.model = AutoModel.from_pretrained(
             model_id, config=config, torch_dtype=dtype
         ).to(self.cfg.device)
         self.model.eval()
