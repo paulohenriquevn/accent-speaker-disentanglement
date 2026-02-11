@@ -47,9 +47,21 @@ class AcousticFeatureExtractor:
         else:
             f0_stats = np.array([f0.mean(), f0.std(), np.median(f0)])
 
-        onset_env = librosa.onset.onset_strength(y=y, sr=self.cfg.sample_rate)
-        peaks = librosa.util.peak_pick(onset_env, 3, 3, 3, 3, 0.5, 5)
-        speaking_rate = len(peaks) / duration
+        frame_length = self.cfg.win_length
+        hop = self.cfg.hop_length
+        if len(y) < frame_length:
+            padded = np.pad(y, (0, frame_length - len(y)))
+        else:
+            padded = y
+        frames = np.lib.stride_tricks.sliding_window_view(padded, frame_length)[::hop]
+        if frames.size == 0:
+            rms = np.array([0.0], dtype=np.float32)
+        else:
+            rms = np.sqrt(np.mean(frames ** 2, axis=1))
+        threshold = rms.mean() + rms.std()
+        local_max = (rms[1:-1] > rms[:-2]) & (rms[1:-1] > rms[2:]) & (rms[1:-1] > threshold)
+        peaks = np.where(local_max)[0]
+        speaking_rate = len(peaks) / max(duration, 1e-3)
 
         return {
             "mfcc_mean": mfcc_mean.astype(np.float32),
