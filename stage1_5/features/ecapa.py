@@ -9,8 +9,16 @@ from typing import Dict
 import numpy as np
 import torch
 import torchaudio
-from speechbrain.inference.speaker import EncoderClassifier
 from tqdm import tqdm
+
+# SpeechBrain <0.6 expects torchaudio.list_audio_backends which was removed in torchaudio>=2.1
+if not hasattr(torchaudio, "list_audio_backends"):
+    def _list_audio_backends_stub():  # pragma: no cover - environment-dependent
+        return ["sox_io"]
+
+    torchaudio.list_audio_backends = _list_audio_backends_stub  # type: ignore[attr-defined]
+
+from speechbrain.inference.speaker import EncoderClassifier
 
 from ..data import Manifest
 from ..utils.io import ensure_dir
