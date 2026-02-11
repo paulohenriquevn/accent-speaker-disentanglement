@@ -24,7 +24,7 @@ dependencies = [
   "torchaudio>=2.2",
   "speechbrain>=0.5.16",
   "huggingface-hub>=0.34",
-  "s3prl>=0.4.12",
+  "transformers>=4.39",
   "datasets>=2.18",
   "fsspec>=2025.3",
   "sentence-transformers<5.2",
