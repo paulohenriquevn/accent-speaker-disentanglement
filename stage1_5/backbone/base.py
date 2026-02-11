@@ -13,10 +13,10 @@ from ..data import ManifestEntry
 class BackboneAdapter(Protocol):
     model: torch.nn.Module
 
-    def prepare_inputs(self, entry: ManifestEntry, text: str) -> Dict[str, torch.Tensor | str | int]:
+    def prepare_inputs(self, entry: ManifestEntry, text: str) -> Dict[str, torch.Tensor]:
         ...
 
-    def forward(self, inputs: Dict[str, torch.Tensor | str | int]) -> torch.Tensor:
+    def forward(self, inputs: Dict[str, torch.Tensor]) -> torch.Tensor:
         ...
 
 

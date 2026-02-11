@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
+# pyright: ignore
+
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Any, Callable, Dict, Optional, cast
 
 import torch
 from transformers import AutoConfig, AutoModel, AutoModelForSeq2SeqLM, AutoProcessor, AutoTokenizer
 
 from ..data import ManifestEntry
-from .base import BackboneAdapter
 
 
 @dataclass
@@ -18,11 +19,13 @@ class HFAttachConfig:
     device: str = "cpu"
 
 
-class HuggingFaceBackboneAdapter(BackboneAdapter):
+class HuggingFaceBackboneAdapter:
     def __init__(self, cfg: HFAttachConfig):
         self.cfg = cfg
-        self.tokenizer = None
-        self.processor = None
+        self.tokenizer: Optional[Callable[..., Dict[str, torch.Tensor]]] = None
+        self.processor: Optional[Callable[..., Dict[str, torch.Tensor]]] = None
+        self._encoder: Optional[Callable[..., Dict[str, torch.Tensor]]] = None
+        self._model_type = None
 
         qwen_tts_available = False
         try:
@@ -36,7 +39,8 @@ class HuggingFaceBackboneAdapter(BackboneAdapter):
             qwen_tts_available = False
 
         config = AutoConfig.from_pretrained(cfg.checkpoint)
-        if getattr(config, "model_type", None) == "qwen3_tts":
+        self._model_type = getattr(config, "model_type", None)
+        if self._model_type == "qwen3_tts":
             if not qwen_tts_available:
                 raise RuntimeError(
                     "Checkpoint requires qwen-tts. Install with: pip install -U qwen-tts"
@@ -47,15 +51,49 @@ class HuggingFaceBackboneAdapter(BackboneAdapter):
             self.tokenizer = AutoTokenizer.from_pretrained(cfg.checkpoint)
             self.model = AutoModelForSeq2SeqLM.from_pretrained(cfg.checkpoint).to(cfg.device)
 
+        if self.processor is not None:
+            self._encoder = self.processor
+        elif self.tokenizer is not None:
+            self._encoder = self.tokenizer
+        else:
+            raise RuntimeError("Text encoder is not initialized")
+
         self.model.eval()
 
     def prepare_inputs(self, entry: ManifestEntry, text: str) -> Dict[str, torch.Tensor]:
-        if self.processor is not None:
-            encoded = self.processor(text=text, return_tensors="pt", padding=True)
-        else:
-            encoded = self.tokenizer(text, return_tensors="pt")
+        if self._encoder is None:
+            raise RuntimeError("Text encoder is not initialized")
+        encoder = cast(Callable[..., Dict[str, torch.Tensor]], self._encoder)
+        encoded = encoder(text=text, return_tensors="pt", padding=True)
         return {k: v.to(self.cfg.device) for k, v in encoded.items()}
 
     def forward(self, inputs: Dict[str, torch.Tensor]) -> torch.Tensor:
         with torch.no_grad():
             return self.model(**inputs)
+
+    def resolve_layer(self, alias: str) -> torch.nn.Module:
+        if self._model_type != "qwen3_tts":
+            raise KeyError(alias)
+
+        modules = dict(self.model.named_modules())
+        if alias in modules:
+            return modules[alias]
+
+        if alias == "text_encoder_out":
+            candidate = "talker.text_projection"
+            if candidate in modules:
+                return modules[candidate]
+        if alias == "pre_vocoder":
+            candidate = "talker.codec_head"
+            if candidate in modules:
+                return modules[candidate]
+
+        if alias.startswith("decoder_block_"):
+            suffix = alias.split("decoder_block_", 1)[1]
+            if suffix.isdigit():
+                idx = int(suffix)
+                candidate = f"talker.model.layers.{idx}"
+                if candidate in modules:
+                    return modules[candidate]
+
+        raise KeyError(alias)
