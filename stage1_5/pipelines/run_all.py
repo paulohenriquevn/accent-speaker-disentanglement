@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -29,8 +30,12 @@ def run_pipeline(config_path: Path) -> Dict[str, Any]:
     manifest = Manifest.from_jsonl(cfg["paths"]["manifest"])
 
     plans = [_plan_from_dict(plan_cfg) for plan_cfg in cfg["probes"]["feature_spaces"]]
-    probe_cfg = ProbeConfig(max_iter=cfg["probes"]["max_iter"], test_size=cfg["probes"]["test_size"],
-                            seed=cfg["experiment"]["seed"])
+    probe_cfg = ProbeConfig(
+        max_iter=cfg["probes"]["max_iter"],
+        test_size=cfg["probes"]["test_size"],
+        seed=cfg["experiment"]["seed"],
+        speaker_disjoint=cfg["probes"].get("speaker_disjoint", True),
+    )
     runner = ProbeRunner(manifest, plans, probe_cfg)
     results = runner.run()
 
@@ -64,17 +69,44 @@ def _decide(metrics_df: pd.DataFrame, cfg: Dict[str, Any]) -> Decision:
     cond_margin = cfg["experiment"]["leakage_conditional_margin_pp"] / 100.0
     min_go = cfg["experiment"]["min_f1_go"]
     min_cond = cfg["experiment"]["min_f1_conditional"]
+    text_drop_tol = cfg["experiment"]["text_drop_tolerance_pp"] / 100.0
+    min_nogo = 0.40
 
-    sorted_df = metrics_df.sort_values("accent_f1", ascending=False)
+    accent_rows = metrics_df[metrics_df["target"].isin(["accent", "joint"])]
+    backbone_rows = accent_rows[accent_rows["label"].str.startswith("backbone:")]
+    ssl_rows = accent_rows[accent_rows["label"].str.startswith("ssl:")]
+
+    candidate_rows = backbone_rows if not backbone_rows.empty else accent_rows
+
+    def _passes(row: pd.Series, min_f1: float, leak_margin: float) -> bool:
+        return (
+            row.accent_f1 >= min_f1
+            and row.leakage_a2s <= row.chance_speaker + leak_margin
+            and row.accent_text_drop <= text_drop_tol
+        )
+
+    sorted_df = candidate_rows.sort_values("accent_f1", ascending=False)
     for _, row in sorted_df.iterrows():
-        if row.accent_f1 >= min_go and row.leakage_a2s <= row.chance_speaker + margin:
-            rationale = f"Layer {row.label} passes GO thresholds (F1={row.accent_f1:.2f}, leakage={row.leakage_a2s:.2f})."
+        if _passes(row, min_go, margin):
+            rationale = (
+                f"Layer {row.label} passes GO thresholds (F1={row.accent_f1:.2f}, "
+                f"leakage={row.leakage_a2s:.2f}, text_drop={row.accent_text_drop:.2f})."
+            )
             return Decision(label=row.label, status="GO", rationale=rationale)
 
     for _, row in sorted_df.iterrows():
-        if row.accent_f1 >= min_cond and row.leakage_a2s <= row.chance_speaker + cond_margin:
-            rationale = f"Layer {row.label} meets conditional GO (F1={row.accent_f1:.2f}, leakage={row.leakage_a2s:.2f})."
+        if _passes(row, min_cond, cond_margin):
+            rationale = (
+                f"Layer {row.label} meets conditional GO (F1={row.accent_f1:.2f}, "
+                f"leakage={row.leakage_a2s:.2f}, text_drop={row.accent_text_drop:.2f})."
+            )
             return Decision(label=row.label, status="GO_CONDITIONAL", rationale=rationale)
 
-    rationale = "No layer achieved required accent separability."
+    best_backbone = backbone_rows["accent_f1"].max() if not backbone_rows.empty else float("nan")
+    best_ssl = ssl_rows["accent_f1"].max() if not ssl_rows.empty else float("nan")
+    if (np.isnan(best_backbone) or best_backbone < min_nogo) and (np.isnan(best_ssl) or best_ssl < min_nogo):
+        rationale = "Accent separability is weak in both backbone and SSL baselines (below 0.40)."
+        return Decision(label=None, status="NOGO", rationale=rationale)
+
+    rationale = "No backbone layer achieved required accent separability with low leakage and text robustness."
     return Decision(label=None, status="NOGO", rationale=rationale)

@@ -16,13 +16,21 @@ from ..utils.io import ensure_dir
 class StageReportWriter:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.template_path = Path("stage1_5/reporting/templates/stage1_5_report_template.md")
+        self.template_path = Path(__file__).resolve().parent / "templates" / "stage1_5_report_template.md"
 
     def generate(self, decision, metrics_df: pd.DataFrame, metrics_path: Path) -> Dict[str, Any]:
         heatmap_dir = Path(self.config["analysis"]["heatmap_dir"])
         figure_accent = metric_heatmap(metrics_df, ["accent_f1"], heatmap_dir / "accent_f1.png", "Accent F1")
         figure_leak = metric_heatmap(metrics_df, ["leakage_a2s", "leakage_s2a"],
                                      heatmap_dir / "leakage.png", "Leakage")
+        figure_text = None
+        if "accent_text_f1" in metrics_df.columns:
+            figure_text = metric_heatmap(
+                metrics_df,
+                ["accent_text_f1", "accent_text_drop"],
+                heatmap_dir / "accent_text_robustness.png",
+                "Accent Text Robustness",
+            )
 
         report_path = Path(self.config["paths"]["report"])
         ensure_dir(report_path.parent)
@@ -49,6 +57,7 @@ class StageReportWriter:
             "figures": {
                 "accent": str(figure_accent),
                 "leakage": str(figure_leak),
+                "text_robustness": str(figure_text) if figure_text else None,
             },
             "rationale": decision.rationale,
         }

@@ -17,6 +17,13 @@ from ..data import ManifestEntry
 class HFAttachConfig:
     checkpoint: str
     device: str = "cpu"
+    dtype: str | None = None
+    attn_implementation: str | None = None
+    generation_mode: str = "custom_voice"
+    generation_language: str = "Portuguese"
+    generation_speaker: str = "ryan"
+    generation_instruct: str | None = None
+    generation_max_new_tokens: int = 256
 
 
 class HuggingFaceBackboneAdapter:
@@ -40,16 +47,21 @@ class HuggingFaceBackboneAdapter:
 
         config = AutoConfig.from_pretrained(cfg.checkpoint)
         self._model_type = getattr(config, "model_type", None)
+        model_kwargs: Dict[str, Any] = {}
+        if cfg.dtype:
+            model_kwargs["torch_dtype"] = getattr(torch, cfg.dtype)
+        if cfg.attn_implementation:
+            model_kwargs["attn_implementation"] = cfg.attn_implementation
         if self._model_type == "qwen3_tts":
             if not qwen_tts_available:
                 raise RuntimeError(
                     "Checkpoint requires qwen-tts. Install with: pip install -U qwen-tts"
                 )
             self.processor = AutoProcessor.from_pretrained(cfg.checkpoint, fix_mistral_regex=True)
-            self.model = AutoModel.from_pretrained(cfg.checkpoint).to(cfg.device)
+            self.model = AutoModel.from_pretrained(cfg.checkpoint, **model_kwargs).to(cfg.device)
         else:
             self.tokenizer = AutoTokenizer.from_pretrained(cfg.checkpoint)
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(cfg.checkpoint).to(cfg.device)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(cfg.checkpoint, **model_kwargs).to(cfg.device)
 
         if self.processor is not None:
             self._encoder = self.processor
@@ -61,6 +73,15 @@ class HuggingFaceBackboneAdapter:
         self.model.eval()
 
     def prepare_inputs(self, entry: ManifestEntry, text: str) -> Dict[str, torch.Tensor]:
+        if self._model_type == "qwen3_tts":
+            return {
+                "mode": self.cfg.generation_mode,
+                "text": text,
+                "language": self.cfg.generation_language,
+                "speaker": self.cfg.generation_speaker,
+                "instruct": self.cfg.generation_instruct,
+                "max_new_tokens": self.cfg.generation_max_new_tokens,
+            }
         if self._encoder is None:
             raise RuntimeError("Text encoder is not initialized")
         encoder = cast(Callable[..., Dict[str, torch.Tensor]], self._encoder)
@@ -81,7 +102,7 @@ class HuggingFaceBackboneAdapter:
                         speaker=inputs.get("speaker", "ryan"),
                         instruct=inputs.get("instruct"),
                         non_streaming_mode=True,
-                        max_new_tokens=256,  # pequeno, só pra rodar rápido
+                        max_new_tokens=inputs.get("max_new_tokens", 256),
                     )
                     return torch.empty(0)
                 raise ValueError(f"Unsupported qwen3_tts mode: {mode}")

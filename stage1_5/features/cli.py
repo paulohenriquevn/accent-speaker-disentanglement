@@ -26,14 +26,48 @@ def ecapa(manifest: Path, output: Path, device: str = "cpu") -> None:
 
 
 @app.command()
-def ssl(manifest: Path, output: Path, model: str = "wavlm_large") -> None:
-    extract_ssl_cli(manifest, output, model)
+def ssl(
+    manifest: Path,
+    output: Path,
+    model: str = "wavlm_large",
+    layers: List[int] | None = typer.Option(None, help="Layer indices to extract"),
+    device: str = "cpu",
+    torch_dtype: str | None = typer.Option(None, help="float16|bfloat16|float32"),
+    pooling: str = typer.Option("mean", help="mean|max|mean_std"),
+) -> None:
+    extract_ssl_cli(manifest, output, model, layers, device, torch_dtype, pooling)
 
 
 @app.command()
 def backbone(manifest: Path, text_json: Path, output: Path, checkpoint: str,
-             layers: List[str] = typer.Option(..., help="Layer names to capture")) -> None:
-    extract_backbone_cli(manifest, text_json, output, checkpoint, layers)
+             layers: List[str] = typer.Option(..., help="Layer names to capture"),
+             device: str = "cpu",
+             dtype: str | None = typer.Option(None, help="float16|bfloat16|float32"),
+             attn_implementation: str | None = typer.Option(None, help="flash-attn2|flash-attn3|eager"),
+             generation_mode: str = "custom_voice",
+             generation_language: str = "Portuguese",
+             generation_speaker: str = "ryan",
+             generation_instruct: str | None = None,
+             generation_max_new_tokens: int = 256,
+             pooling: str = typer.Option("mean", help="mean|max|mean_std"),
+             strict: bool = True) -> None:
+    extract_backbone_cli(
+        manifest,
+        text_json,
+        output,
+        checkpoint,
+        layers,
+        device,
+        dtype,
+        attn_implementation,
+        generation_mode,
+        generation_language,
+        generation_speaker,
+        generation_instruct,
+        generation_max_new_tokens,
+        pooling,
+        strict,
+    )
 
 
 if __name__ == "__main__":

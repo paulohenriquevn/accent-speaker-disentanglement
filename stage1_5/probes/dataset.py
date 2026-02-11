@@ -57,6 +57,9 @@ class NPZFeatureStore:
         vectors: List[np.ndarray] = []
         for entry in manifest:
             data = self._load_entry(entry.utt_id)
+            missing = [k for k in keys if k not in data]
+            if missing:
+                raise KeyError(f"Missing keys {missing} for {entry.utt_id} in {self.root}")
             feats = [np.atleast_1d(data[k]).ravel() for k in keys]
             vectors.append(np.concatenate(feats).astype(np.float32))
         return np.vstack(vectors)

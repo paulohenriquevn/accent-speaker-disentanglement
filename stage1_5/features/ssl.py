@@ -17,6 +17,7 @@ from tqdm import tqdm
 from ..data import Manifest
 from ..utils.io import ensure_dir
 from .storage import save_npz_feature
+from .pooling import temporal_pooling
 
 
 PathLike = Union[str, Path]
@@ -37,6 +38,7 @@ class SSLConfig:
     sample_rate: int = 16000
     device: str = "cpu"
     torch_dtype: Optional[str] = None  # "float16" | "bfloat16" | "float32" | None
+    pooling: str = "mean"
 
 
 class SSLFeatureExtractor:
@@ -116,7 +118,7 @@ class SSLFeatureExtractor:
         for layer_id in selected_layers:
             # hidden_states[layer] shape: (batch=1, time, hidden)
             tensor = hidden_states[layer_id].squeeze(0)
-            pooled = tensor.mean(dim=0).detach().to("cpu").numpy().astype(np.float32)
+            pooled = temporal_pooling(tensor, mode=self.cfg.pooling).detach().to("cpu").numpy().astype(np.float32)
             feats[f"layer_{layer_id}"] = pooled
 
         return feats
@@ -128,7 +130,17 @@ class SSLFeatureExtractor:
             save_npz_feature(output_dir, entry.utt_id, feats)
 
 
-def extract_ssl_cli(manifest_path: Path, output_dir: Path, model: str = "wavlm_large") -> None:
+def extract_ssl_cli(
+    manifest_path: Path,
+    output_dir: Path,
+    model: str = "wavlm_large",
+    layers: Optional[List[int]] = None,
+    device: str = "cpu",
+    torch_dtype: Optional[str] = None,
+    pooling: str = "mean",
+) -> None:
     manifest = Manifest.from_jsonl(manifest_path)
-    extractor = SSLFeatureExtractor(SSLConfig(model=model))
+    extractor = SSLFeatureExtractor(
+        SSLConfig(model=model, layers=layers, device=device, torch_dtype=torch_dtype, pooling=pooling)
+    )
     extractor.process_manifest(manifest, output_dir)

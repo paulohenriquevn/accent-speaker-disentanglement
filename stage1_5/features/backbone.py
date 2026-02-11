@@ -68,7 +68,7 @@ class BackboneFeatureExtractor:
 
     # --- internals ---------------------------------------------------------
 
-    def _resolve_module(self, layer: str) -> torch.nn.Module:
+    def _resolve_module(self, layer: str) -> torch.nn.Module | None:
         # Prefer adapter-provided resolver (aliases -> modules)
         resolver = getattr(self.adapter, "resolve_layer", None)
         if callable(resolver):
@@ -86,8 +86,7 @@ class BackboneFeatureExtractor:
             )
             if self.cfg.strict:
                 raise ValueError(msg)
-            # non-strict: just skip (but make it loud-ish)
-            raise ValueError(msg)
+            return None
         return modules[layer]
 
     @staticmethod
@@ -136,6 +135,8 @@ class BackboneFeatureExtractor:
     def _register_hooks(self, layers: Sequence[str]) -> None:
         for layer in layers:
             module = self._resolve_module(layer)
+            if module is None:
+                continue
 
             def _capture(_module, _inputs, output, layer_name=layer):
                 t = self._pick_tensor_from_output(output)
@@ -212,6 +213,16 @@ def extract_backbone_cli(
     output_dir: Path,
     checkpoint: str,
     layers: Sequence[str],
+    device: str = "cpu",
+    dtype: str | None = None,
+    attn_implementation: str | None = None,
+    generation_mode: str = "custom_voice",
+    generation_language: str = "Portuguese",
+    generation_speaker: str = "ryan",
+    generation_instruct: str | None = None,
+    generation_max_new_tokens: int = 256,
+    pooling: str = "mean",
+    strict: bool = True,
 ) -> None:
     """
     CLI entrypoint (kept compatible with your current HF adapter path).
@@ -224,8 +235,20 @@ def extract_backbone_cli(
     text_entries = json.loads(Path(text_json).read_text())
     texts = {item["text_id"]: item["text"] for item in text_entries}
 
-    adapter = HuggingFaceBackboneAdapter(HFAttachConfig(checkpoint=checkpoint))
-    cfg = BackboneFeatureConfig(layers=layers)
+    adapter = HuggingFaceBackboneAdapter(
+        HFAttachConfig(
+            checkpoint=checkpoint,
+            device=device,
+            dtype=dtype,
+            attn_implementation=attn_implementation,
+            generation_mode=generation_mode,
+            generation_language=generation_language,
+            generation_speaker=generation_speaker,
+            generation_instruct=generation_instruct,
+            generation_max_new_tokens=generation_max_new_tokens,
+        )
+    )
+    cfg = BackboneFeatureConfig(layers=layers, pooling=pooling, strict=strict)
 
     with BackboneFeatureExtractor(adapter, cfg) as extractor:
         extractor.process(manifest, texts, output_dir)

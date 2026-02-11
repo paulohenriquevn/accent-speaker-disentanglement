@@ -14,6 +14,7 @@
 - Allow torch>=2.2 / torchaudio>=2.2 with SpeechBrain compatibility shim (#0)
 - Dataset preparation docs, CLI helpers, and Colab automation for downloading + manifest creation (#0)
 - Add huggingface_hub shim + upgrade to >=0.34, pin sentence-transformers<5.2, and align fsspec>=2025.3 for resolver stability (#0)
+- Add critical-path tests for decision logic, backbone extraction, and end-to-end pipeline (#0)
 
 ### Changed
 - Replace the SSL extractor's s3prl dependency with Hugging Face Transformers to avoid SoX requirements (#0)
@@ -23,3 +24,12 @@
 - Backbone adapter now supports Qwen3-TTS checkpoints via qwen-tts registration to avoid config mapping errors (#0)
 - Backbone CLI now tolerates space-delimited layer lists to avoid hook resolution errors (#0)
 - Qwen3-TTS layer aliases now resolve to concrete module paths for backbone hooks (#0)
+- Colab notebook now includes a Qwen3-TTS audio synthesis cell to generate synthetic WAVs for the manifest (#0)
+- Fix temporal pooling to reduce over time, preventing variable-length feature vectors (#0)
+- Implement text-robustness metrics and enforce them in GO/GO_CONDITIONAL decisions (#0)
+- Use probe target metadata and speaker-disjoint configuration when building evaluation splits (#0)
+- Make backbone/Qwen3-TTS adapter honor generation config and avoid token/text input mismatches (#0)
+- Add SSL/backbone CLI options for layers, dtype, pooling, and generation controls (#0)
+- Harden report generation paths and include text-robustness heatmaps/metrics (#0)
+- Improve RSA computation to avoid diagonal bias and mismatched similarity/distance scales (#0)
+- Validate NPZ feature keys to fail fast on inconsistent feature stores (#0)
