@@ -217,6 +217,9 @@ def extract_backbone_cli(
     CLI entrypoint (kept compatible with your current HF adapter path).
     For Qwen3-TTS, you’ll likely swap adapter construction here later.
     """
+    if len(layers) == 1 and " " in layers[0]:
+        layers = [l for l in layers[0].split(" ") if l]
+
     manifest = Manifest.from_jsonl(manifest_path)
     text_entries = json.loads(Path(text_json).read_text())
     texts = {item["text_id"]: item["text"] for item in text_entries}
