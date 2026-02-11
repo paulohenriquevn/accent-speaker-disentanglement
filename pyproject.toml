@@ -23,6 +23,7 @@ dependencies = [
   "torch>=2.2",
   "torchaudio>=2.2",
   "speechbrain>=0.5.16",
+  "huggingface-hub<0.21",
   "s3prl>=0.4.12",
   "datasets>=2.18",
   "hydra-core>=1.3",
