@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Artifacts
+artifacts/
+report/
+gen/
+stage1_5.egg-info/
+
+# Data & datasets
+data/manifest.jsonl
+data/wav/
+data/splits/
+data/ref_embeddings/
+data/texts/
+
+# Checkpoints
+checkpoints/
+models/
+
+# IDE & misc
+.idea/
+.vscode/
+.DS_Store

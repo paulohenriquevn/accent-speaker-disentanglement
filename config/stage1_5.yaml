@@ -1,0 +1,72 @@
+experiment:
+  seed: 1337
+  accents: ["NE", "SE", "S"]
+  min_f1_go: 0.55
+  min_f1_conditional: 0.45
+  leakage_margin_pp: 7
+  leakage_conditional_margin_pp: 12
+  text_drop_tolerance_pp: 10
+
+paths:
+  manifest: data/manifest.jsonl
+  splits: data/splits
+  artifacts_root: artifacts
+  acoustic_features: artifacts/features/acoustic
+  ecapa_embeddings: artifacts/features/ecapa
+  ssl_features: artifacts/features/ssl
+  backbone_features: artifacts/features/backbone
+  probes: artifacts/probes
+  analysis: artifacts/analysis
+  report: report/stage1_5_report.md
+
+audio:
+  sample_rate: 16000
+  vad_threshold: 0.02
+
+backbone:
+  provider: huggingface
+  checkpoint: "your-org/tts-backbone"
+  layers:
+    - encoder_out
+    - block_04
+    - block_08
+    - decoder_pre_vocoder
+  generation:
+    speaker_reference: data/ref_embeddings/spk.json
+    texts_path: data/texts
+    output_dir: gen/synthetic_audio
+
+ssl:
+  model: wavlm_large
+  layers: [0, 6, 12, 18, 24]
+
+probes:
+  model: logistic_regression
+  max_iter: 4000
+  test_size: 0.25
+  speaker_disjoint: true
+  accent_metric: f1_macro
+  speaker_metric: accuracy
+  feature_spaces:
+    - name: acoustic
+      root: artifacts/features/acoustic
+      keys: ["mfcc_mean", "mfcc_std", "f0_stats", "speaking_rate"]
+      combine: true
+      target: accent
+    - name: ssl
+      root: artifacts/features/ssl
+      combine: false
+      target: joint
+    - name: backbone
+      root: artifacts/features/backbone
+      combine: false
+      target: joint
+    - name: ecapa
+      root: artifacts/features/ecapa
+      keys: ["ecapa"]
+      combine: true
+      target: speaker
+
+analysis:
+  metrics_csv: artifacts/analysis/metrics.csv
+  heatmap_dir: artifacts/analysis/figures
