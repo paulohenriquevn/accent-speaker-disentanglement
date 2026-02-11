@@ -32,10 +32,17 @@ class SSLConfig:
 
 class SSLFeatureExtractor:
     def __init__(self, cfg: SSLConfig | None = None):
-        import s3prl.hub as hub
+        import importlib
+        hub = importlib.import_module("s3prl.hub")
 
         self.cfg = cfg or SSLConfig()
-        self.model = getattr(hub, self.cfg.model)().to(self.cfg.device)
+        upstream_cls = getattr(hub, self.cfg.model)
+        try:
+            self.model = upstream_cls().to(self.cfg.device)
+        except ModuleNotFoundError as exc:
+            if "torchaudio.sox_effects" in str(exc):
+                raise RuntimeError("torchaudio.sox_effects is unavailable; run `pip install 'torchaudio[sox]'` or install libsox") from exc
+            raise
         self.model.eval()
 
     def extract_file(self, wav_path: str | Path) -> Dict[str, np.ndarray]:
