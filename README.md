@@ -295,6 +295,13 @@ The pipeline will produce:
 - Notebook: `notebooks/stage1_5_colab.ipynb`
 - Upload/run in Colab → set `REPO_URL`, ensure `data/manifest.jsonl` + audio exist, execute the cells sequentially.
 - Outputs land under `artifacts/` and `report/`; sync them back to Drive if needed.
+- Use the dataset section inside the notebook to automatically download an archive, extract WAVs, and build `data/manifest.jsonl` via `stage1_5 dataset ...` commands (see `docs/dataset_guidelines.md`).
+
+### Dataset Prep Tools
+
+- Documentation: `docs/dataset_guidelines.md`
+- Download archive: `stage1_5 dataset download --url <https://...zip> --output-dir data/external`
+- Build manifest from CSV metadata: `stage1_5 dataset build-manifest metadata.csv --audio-root data/wav --output data/manifest.jsonl`
 
 ## 🧰 Outputs & Diagnostics
 
