@@ -71,10 +71,13 @@ class SSLFeatureExtractor:
         ).to(self.cfg.device)
         self.model.eval()
 
-        # Processor is optional; fall back to FeatureExtractor for wav2vec2-family
+        # Processor is optional; fall back to FeatureExtractor for wav2vec2-family.
+        # AutoProcessor tries to load a tokenizer (e.g. Wav2Vec2CTCTokenizer) which
+        # fails with TypeError when the model has no vocab.json (pure SSL models
+        # like wavlm-large).
         try:
             self.processor = AutoProcessor.from_pretrained(model_id)
-        except (ValueError, OSError):
+        except (ValueError, OSError, TypeError):
             self.processor = AutoFeatureExtractor.from_pretrained(model_id)
 
     def _load_waveform(self, wav_path: PathLike) -> torch.Tensor:
