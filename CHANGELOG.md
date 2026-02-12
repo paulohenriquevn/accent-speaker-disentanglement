@@ -24,7 +24,8 @@
 ### Fixed
 - Colab notebook now auto-generates default texts and uses consistent paths for backbone feature extraction (#0)
 - Fix `map_state_to_region()` to use case-insensitive matching — CORAA-MUPE-ASR uses title-case prepositions (e.g. "Rio Grande Do Sul") which silently dropped all Sul speakers, reducing the experiment from 3 accents to 2 (#0)
-- Fix audio export compatibility with HuggingFace `datasets` v4+ where audio column returns a `torchcodec.AudioDecoder` object instead of a dict — use `audio_data["array"]` subscript interface directly (#0)
+- Fix audio export compatibility with HuggingFace `datasets` v4+ — extract audio via `_extract_audio()` helper that handles plain dicts, datasets `AudioDecoder` with subscript support, and raw torchcodec `AudioDecoder` via native `.get_all_samples()` API (#0)
+- Fix SSL `AutoProcessor` fallback to also catch `TypeError` — pure SSL models like `wavlm-large` have no tokenizer vocab, causing `Wav2Vec2CTCTokenizer.__init__` to fail with `TypeError` instead of `ValueError`/`OSError` (#0)
 - Backbone adapter now supports Qwen3-TTS checkpoints via qwen-tts registration to avoid config mapping errors (#0)
 - Backbone CLI now tolerates space-delimited layer lists to avoid hook resolution errors (#0)
 - Qwen3-TTS layer aliases now resolve to concrete module paths for backbone hooks (#0)
@@ -45,3 +46,5 @@
 - Add tqdm progress bar and per-file error handling to audio export loop for visible progress in notebooks (#0)
 - Notebook cell 2.2 now calls `build_manifest_from_coraa()` directly via Python instead of CLI subprocess, ensuring tqdm and errors are visible (#0)
 - Notebook cell 3.1 (texts.json) now self-contained — reloads manifest from disk instead of depending on `df_manifest` variable from a prior cell (#0)
+- Fix backbone CLI `--layers` syntax in notebooks — Typer requires `--layers X --layers Y` per item, not space-separated values after a single flag (#0)
+- Fix `text_id` mismatch between manifest and `texts.json` — pandas `.astype(str)` truncates float32 values (e.g. `182.711` instead of `182.71099853515625`), causing `KeyError` in backbone extractor; manifest builder now uses `str(float(...))` and notebook cell 3.1 uses `.map(str)` for consistent full-precision text IDs (#0)

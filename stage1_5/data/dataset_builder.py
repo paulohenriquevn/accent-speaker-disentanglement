@@ -282,7 +282,9 @@ def build_manifest_from_coraa(
         speaker = str(df_row.speaker_code)
         region = str(df_row.region)
         audio_name = str(df_row.audio_name)
-        start_time = str(df_row.start_time).replace(".", "_")
+        # Cast to Python float first so str() always gives full precision,
+        # even if the pandas column is float32 (np.float32.__str__ differs).
+        start_time = str(float(df_row.start_time)).replace(".", "_")
         text_id = f"{audio_name}_{start_time}"
         utt_id = f"{speaker}_{region}_{text_id}"
 
