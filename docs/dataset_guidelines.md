@@ -60,6 +60,60 @@ Assemble a speech corpus that satisfies the Stage 1.5 experiment prerequisites:
 | Falabrasil Speech Datasets | Aggregation of Brazilian corpora with region metadata | https://github.com/falabrasil/speech-datasets |
 | Mozilla Common Voice pt-BR | Crowdsourced, includes user-declared accent; requires curation | https://commonvoice.mozilla.org/pt/datasets |
 | ALIP / C-ORAL-BRASIL | Academic corpora with regional labels (license required) | Search via USP/UNICAMP repositories |
+| CORAA-MUPE-ASR | 365h of spontaneous speech interviews with birth_state metadata; Hugging Face | https://huggingface.co/datasets/nilc-nlp/CORAA-MUPE-ASR |
+
+## CORAA-MUPE-ASR Integration
+
+The [MuPe Life Stories Dataset](https://huggingface.co/datasets/nilc-nlp/CORAA-MUPE-ASR) provides 289 life story interviews (365 hours) with regional metadata (`birth_state`).
+
+### Key characteristics
+
+- **Spontaneous speech** (interviews), not controlled reading. Each segment has a unique `text_id`; text-disjoint evaluation is limited compared to read-speech corpora.
+- **Speaker types**: Interviewees (`speaker_type='R'`) have `birth_state` metadata; interviewers (`P/1`, `P/2`) do not. Only interviewees are included in the manifest.
+- **Region mapping**: `birth_state` (27 Brazilian states) is automatically mapped to the 5 IBGE macro-regions: `N`, `NE`, `CO`, `SE`, `S`.
+
+### Quick start
+
+```bash
+# Minimal: download and build manifest with default filters
+stage1_5 dataset build-coraa
+
+# With filters: only NE/SE/S, high quality, 2-30s segments, max 50 per speaker
+stage1_5 dataset build-coraa \
+  --regions "NE,SE,S" \
+  --audio-quality high \
+  --min-duration 2.0 \
+  --max-duration 30.0 \
+  --max-samples-per-speaker 50 \
+  --output data/manifest.jsonl \
+  --audio-dir data/wav/coraa
+```
+
+### CLI options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--output` | `data/manifest.jsonl` | Output manifest path |
+| `--audio-dir` | `data/wav/coraa` | Directory for exported WAV files |
+| `--hf-dataset` | `nilc-nlp/CORAA-MUPE-ASR` | Hugging Face dataset identifier |
+| `--hf-split` | `train` | Dataset split to load |
+| `--regions` | all | Comma-separated macro-region codes (e.g. `NE,SE,S`) |
+| `--min-duration` | none | Minimum segment duration in seconds |
+| `--max-duration` | none | Maximum segment duration in seconds |
+| `--audio-quality` | none | Filter by quality (`high` or `low`) |
+| `--max-samples-per-speaker` | none | Cap segments per speaker |
+
+### Update config
+
+After building the manifest, update `config/stage1_5.yaml` to match:
+
+```yaml
+experiment:
+  accents: ["NE", "SE", "S"]  # or whichever regions you selected
+
+paths:
+  manifest: data/manifest.jsonl
+```
 
 ## Folder Layout Example
 

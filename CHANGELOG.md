@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- CORAA-MUPE-ASR dataset support with `build-coraa` CLI command, automatic state-to-region mapping, and configurable filters (duration, quality, regions, max samples per speaker) (#0)
 - Initial Stage 1.5 pipeline scaffolding, configuration template, and CLI entrypoint (#0)
 - Feature extraction modules (acoustic, ECAPA, SSL, backbone hooks) with Typer CLI (#0)
 - Data manifest utilities, synthetic helpers, and speaker-disjoint splitting (#0)
