@@ -180,6 +180,10 @@ class BackboneFeatureExtractor:
           - (T, H)     -> pool over T
           - (H,)       -> already pooled (no-op)
         """
+        # PyTorch's .numpy() does not support bfloat16 — upcast early so all
+        # downstream code (pooling + numpy conversion) works uniformly.
+        if t.dtype == torch.bfloat16:
+            t = t.float()
         if t.ndim == 3:
             # (B, T, H) -> assume B=1
             if t.size(0) != 1 and self.cfg.strict:
