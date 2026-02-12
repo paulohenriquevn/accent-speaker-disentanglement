@@ -50,6 +50,20 @@ class TestStateToRegion:
         assert map_state_to_region("Amazonas") == "N"
         assert map_state_to_region("Goiás") == "CO"
 
+    def test_case_insensitive_lookup(self) -> None:
+        """CORAA-MUPE uses title-case prepositions; our mapping has lowercase."""
+        # Title-case prepositions as found in CORAA-MUPE dataset
+        assert map_state_to_region("Rio Grande Do Sul") == "S"
+        assert map_state_to_region("Rio De Janeiro") == "SE"
+        assert map_state_to_region("Rio Grande Do Norte") == "NE"
+        assert map_state_to_region("Mato Grosso Do Sul") == "CO"
+        # All-uppercase / all-lowercase
+        assert map_state_to_region("SÃO PAULO") == "SE"
+        assert map_state_to_region("bahia") == "NE"
+        # Canonical form still works
+        assert map_state_to_region("Rio Grande do Sul") == "S"
+        assert map_state_to_region("Rio de Janeiro") == "SE"
+
     def test_unknown_state_returns_none(self) -> None:
         assert map_state_to_region("Narnia") is None
         assert map_state_to_region("") is None
@@ -66,7 +80,9 @@ class TestStateToRegion:
 def _make_fake_hf_dataframe(n: int = 10, **overrides: object) -> pd.DataFrame:
     """Build a DataFrame that mimics CORAA-MUPE-ASR metadata columns."""
     rows = []
-    states = ["São Paulo", "Bahia", "Paraná", "Amazonas", "Goiás"]
+    # Use a mix of canonical and title-case variants (as found in the real
+    # CORAA-MUPE dataset) to verify case-insensitive mapping.
+    states = ["São Paulo", "Bahia", "Paraná", "Rio Grande Do Sul", "Rio De Janeiro"]
     for i in range(n):
         state = states[i % len(states)]
         row = {

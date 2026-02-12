@@ -36,6 +36,14 @@ STATE_TO_REGION: dict[str, str] = {
     "Paraná": "S", "Rio Grande do Sul": "S", "Santa Catarina": "S",
 }
 
+# Case-insensitive lookup built once at import time.  The CORAA-MUPE dataset
+# uses title-case prepositions (e.g. "Rio Grande Do Sul") while our canonical
+# mapping has lowercase prepositions ("Rio Grande do Sul").  Using
+# ``str.casefold()`` handles both forms plus any other capitalisation variant.
+_STATE_TO_REGION_FOLDED: dict[str, str] = {
+    k.casefold(): v for k, v in STATE_TO_REGION.items()
+}
+
 
 def download_archive(url: str, output_dir: str | Path, filename: Optional[str] = None,
                      extract: bool = True) -> Path:
@@ -88,9 +96,12 @@ def build_manifest_from_csv(metadata_csv: str | Path, audio_root: str | Path,
 def map_state_to_region(state: str) -> str | None:
     """Map a Brazilian state name to its IBGE macro-region code.
 
+    The lookup is case-insensitive so that title-case variants found in the
+    CORAA-MUPE dataset (e.g. ``"Rio Grande Do Sul"``) are matched correctly.
+
     Returns ``None`` when the state is not recognized.
     """
-    return STATE_TO_REGION.get(state)
+    return _STATE_TO_REGION_FOLDED.get(state.casefold())
 
 
 def build_manifest_from_coraa(
@@ -235,20 +246,16 @@ def build_manifest_from_coraa(
         speaker_dir.mkdir(parents=True, exist_ok=True)
         wav_path = speaker_dir / f"{utt_id}.wav"
 
-        # Export audio: the HF dataset decodes the audio column on access,
-        # giving us {"path": ..., "array": np.ndarray, "sampling_rate": int}.
+        # Export audio: the HF dataset decodes the audio column on access.
+        # Older datasets versions return a dict {"array": ..., "sampling_rate": ...}.
+        # Newer versions (4+) return a torchcodec AudioDecoder object that
+        # supports the same ["array"] / ["sampling_rate"] subscript interface.
         if not wav_path.exists():
             try:
                 audio_data = hf_row["audio"]
-                audio_array = audio_data.get("array") if isinstance(audio_data, dict) else None
-                if audio_array is None:
-                    errors.append(f"{utt_id}: audio dict has no 'array' key (keys={list(audio_data.keys()) if isinstance(audio_data, dict) else type(audio_data)})")
-                    continue
-                sf.write(
-                    str(wav_path),
-                    np.asarray(audio_array),
-                    audio_data["sampling_rate"],
-                )
+                audio_array = np.asarray(audio_data["array"])
+                sample_rate = int(audio_data["sampling_rate"])
+                sf.write(str(wav_path), audio_array, sample_rate)
                 written += 1
             except Exception as exc:
                 errors.append(f"{utt_id}: {exc}")

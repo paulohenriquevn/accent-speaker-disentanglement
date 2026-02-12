@@ -23,6 +23,8 @@
 
 ### Fixed
 - Colab notebook now auto-generates default texts and uses consistent paths for backbone feature extraction (#0)
+- Fix `map_state_to_region()` to use case-insensitive matching — CORAA-MUPE-ASR uses title-case prepositions (e.g. "Rio Grande Do Sul") which silently dropped all Sul speakers, reducing the experiment from 3 accents to 2 (#0)
+- Fix audio export compatibility with HuggingFace `datasets` v4+ where audio column returns a `torchcodec.AudioDecoder` object instead of a dict — use `audio_data["array"]` subscript interface directly (#0)
 - Backbone adapter now supports Qwen3-TTS checkpoints via qwen-tts registration to avoid config mapping errors (#0)
 - Backbone CLI now tolerates space-delimited layer lists to avoid hook resolution errors (#0)
 - Qwen3-TTS layer aliases now resolve to concrete module paths for backbone hooks (#0)
