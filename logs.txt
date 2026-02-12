@@ -1,0 +1,294 @@
+/usr/local/lib/python3.12/dist-packages/torch/backends/__init__.py:46: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+  self.setter(val)
+2026-02-12 01:25:03.749250: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-02-12 01:25:03.769216: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1770859503.792435   24562 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1770859503.799922   24562 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1770859503.819805   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770859503.819830   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770859503.819833   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770859503.819835   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2026-02-12 01:25:03.824926: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Acoustic features:   0% 0/5930 [00:00<?, ?it/s]/content/stage1_5_repo/stage1_5/features/acoustic.py:31: UserWarning: PySoundFile failed. Trying audioread instead.
+  y, sr = librosa.load(wav_path, sr=self.cfg.sample_rate)
+/usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Acoustic features:   0% 0/5930 [00:00<?, ?it/s]
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:176 in load    │
+│                                                                              │
+│    173 │   else:                                                             │
+│    174 │   │   # Otherwise try soundfile first, and then fall back if necess │
+│    175 │   │   try:                                                          │
+│ ❱  176 │   │   │   y, sr_native = __soundfile_load(path, offset, duration, d │
+│    177 │   │                                                                 │
+│    178 │   │   except sf.SoundFileRuntimeError as exc:                       │
+│    179 │   │   │   # If soundfile failed, try audioread instead              │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ duration = None                                                          │ │
+│ │     mono = True                                                          │ │
+│ │   offset = 0.0                                                           │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ │ res_type = 'soxr_hq'                                                     │ │
+│ │       sr = 16000                                                         │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:209 in         │
+│ __soundfile_load                                                             │
+│                                                                              │
+│    206 │   │   context = path                                                │
+│    207 │   else:                                                             │
+│    208 │   │   # Otherwise, create the soundfile object                      │
+│ ❱  209 │   │   context = sf.SoundFile(path)                                  │
+│    210 │                                                                     │
+│    211 │   with context as sf_desc:                                          │
+│    212 │   │   sr_native = sf_desc.samplerate                                │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ duration = None                                                          │ │
+│ │   offset = 0.0                                                           │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/soundfile.py:690 in __init__         │
+│                                                                              │
+│    687 │   │   self._bitrate_mode = bitrate_mode                             │
+│    688 │   │   self._info = _create_info_struct(file, mode, samplerate, chan │
+│    689 │   │   │   │   │   │   │   │   │   │    format, subtype, endian)     │
+│ ❱  690 │   │   self._file = self._open(file, mode_int, closefd)              │
+│    691 │   │   if set(mode).issuperset('r+') and self.seekable():            │
+│    692 │   │   │   # Move write position to 0 (like in Python file objects)  │
+│    693 │   │   │   self.seek(0)                                              │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │      bitrate_mode = None                                                 │ │
+│ │          channels = None                                                 │ │
+│ │           closefd = True                                                 │ │
+│ │ compression_level = None                                                 │ │
+│ │            endian = None                                                 │ │
+│ │              file = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_18… │ │
+│ │            format = None                                                 │ │
+│ │              mode = 'r'                                                  │ │
+│ │          mode_int = 16                                                   │ │
+│ │        samplerate = None                                                 │ │
+│ │              self = SoundFile('data/wav/coraa/MA_HV001/MA_HV001_SE_pc_m… │ │
+│ │                     mode='r', samplerate=0, channels=0, format='FILE',   │ │
+│ │                     subtype='FILE', endian='FILE')                       │ │
+│ │           subtype = None                                                 │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/soundfile.py:1265 in _open           │
+│                                                                              │
+│   1262 │   │   if file_ptr == _ffi.NULL:                                     │
+│   1263 │   │   │   # get the actual error code                               │
+│   1264 │   │   │   err = _snd.sf_error(file_ptr)                             │
+│ ❱ 1265 │   │   │   raise LibsndfileError(err, prefix="Error opening {0!r}: " │
+│   1266 │   │   if mode_int == _snd.SFM_WRITE:                                │
+│   1267 │   │   │   # Due to a bug in libsndfile version <= 1.0.25, frames != │
+│   1268 │   │   │   # when opening a named pipe in SFM_WRITE mode.            │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │      closefd = True                                                      │ │
+│ │          err = 2                                                         │ │
+│ │         file = b'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71… │ │
+│ │     file_ptr = <cdata 'struct SNDFILE_tag *' NULL>                       │ │
+│ │     mode_int = 16                                                        │ │
+│ │ openfunction = <cdata 'struct SNDFILE_tag *(*)(char *, int, struct       │ │
+│ │                SF_INFO *)' 0x7a8822ab991e>                               │ │
+│ │         self = SoundFile('data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv0… │ │
+│ │                mode='r', samplerate=0, channels=0, format='FILE',        │ │
+│ │                subtype='FILE', endian='FILE')                            │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+LibsndfileError: Error opening 
+'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71099853515625.wav': System
+error.
+
+During handling of the above exception, another exception occurred:
+
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /content/stage1_5_repo/stage1_5/features/cli.py:20 in acoustic               │
+│                                                                              │
+│   17                                                                         │
+│   18 @app.command()                                                          │
+│   19 def acoustic(manifest: Path, output: Path, sample_rate: int = 16000) -> │
+│ ❱ 20 │   extract_acoustic_cli(manifest, output, sample_rate)                 │
+│   21                                                                         │
+│   22                                                                         │
+│   23 @app.command()                                                          │
+│                                                                              │
+│ ╭──────────────────────── locals ────────────────────────╮                   │
+│ │    manifest = PosixPath('data/manifest.jsonl')         │                   │
+│ │      output = PosixPath('artifacts/features/acoustic') │                   │
+│ │ sample_rate = 16000                                    │                   │
+│ ╰────────────────────────────────────────────────────────╯                   │
+│                                                                              │
+│ /content/stage1_5_repo/stage1_5/features/acoustic.py:84 in                   │
+│ extract_acoustic_cli                                                         │
+│                                                                              │
+│   81 def extract_acoustic_cli(manifest_path: Path, output_dir: Path, sample_ │
+│   82 │   manifest = Manifest.from_jsonl(manifest_path)                       │
+│   83 │   extractor = AcousticFeatureExtractor(AcousticFeatureConfig(sample_r │
+│ ❱ 84 │   extractor.process_manifest(manifest, output_dir)                    │
+│   85                                                                         │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │     extractor = <stage1_5.features.acoustic.AcousticFeatureExtractor     │ │
+│ │                 object at 0x7a8821685dc0>                                │ │
+│ │      manifest = <stage1_5.data.manifest.Manifest object at               │ │
+│ │                 0x7a8821685550>                                          │ │
+│ │ manifest_path = PosixPath('data/manifest.jsonl')                         │ │
+│ │    output_dir = PosixPath('artifacts/features/acoustic')                 │ │
+│ │   sample_rate = 16000                                                    │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /content/stage1_5_repo/stage1_5/features/acoustic.py:77 in process_manifest  │
+│                                                                              │
+│   74 │   def process_manifest(self, manifest: Manifest, output_dir: str | Pa │
+│   75 │   │   ensure_dir(output_dir)                                          │
+│   76 │   │   for entry in tqdm(manifest, desc="Acoustic features"):          │
+│ ❱ 77 │   │   │   feats = self.extract_file(entry.path)                       │
+│   78 │   │   │   save_npz_feature(output_dir, entry.utt_id, feats)           │
+│   79                                                                         │
+│   80                                                                         │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │      entry = ManifestEntry(                                              │ │
+│ │              │   utt_id='MA_HV001_SE_pc_ma_hv001_182_71099853515625',    │ │
+│ │              │                                                           │ │
+│ │              path='data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_… │ │
+│ │              │   speaker='MA_HV001',                                     │ │
+│ │              │   accent='SE',                                            │ │
+│ │              │   text_id='pc_ma_hv001_182_71099853515625',               │ │
+│ │              │   source='real'                                           │ │
+│ │              )                                                           │ │
+│ │   manifest = <stage1_5.data.manifest.Manifest object at 0x7a8821685550>  │ │
+│ │ output_dir = PosixPath('artifacts/features/acoustic')                    │ │
+│ │       self = <stage1_5.features.acoustic.AcousticFeatureExtractor object │ │
+│ │              at 0x7a8821685dc0>                                          │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /content/stage1_5_repo/stage1_5/features/acoustic.py:31 in extract_file      │
+│                                                                              │
+│   28 │   │   self.cfg = cfg or AcousticFeatureConfig()                       │
+│   29 │                                                                       │
+│   30 │   def extract_file(self, wav_path: str | Path) -> Dict[str, np.ndarra │
+│ ❱ 31 │   │   y, sr = librosa.load(wav_path, sr=self.cfg.sample_rate)         │
+│   32 │   │   duration = len(y) / self.cfg.sample_rate                        │
+│   33 │   │   if duration == 0:                                               │
+│   34 │   │   │   raise ValueError(f"Empty audio: {wav_path}")                │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │     self = <stage1_5.features.acoustic.AcousticFeatureExtractor object   │ │
+│ │            at 0x7a8821685dc0>                                            │ │
+│ │ wav_path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:184 in load    │
+│                                                                              │
+│    181 │   │   │   │   warnings.warn(                                        │
+│    182 │   │   │   │   │   "PySoundFile failed. Trying audioread instead.",  │
+│    183 │   │   │   │   )                                                     │
+│ ❱  184 │   │   │   │   y, sr_native = __audioread_load(path, offset, duratio │
+│    185 │   │   │   else:                                                     │
+│    186 │   │   │   │   raise exc                                             │
+│    187                                                                       │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ duration = None                                                          │ │
+│ │     mono = True                                                          │ │
+│ │   offset = 0.0                                                           │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ │ res_type = 'soxr_hq'                                                     │ │
+│ │       sr = 16000                                                         │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│ in __audioread_load:2                                                        │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ duration = None                                                          │ │
+│ │   offset = 0.0                                                           │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/librosa/util/decorators.py:63 in     │
+│ __wrapper                                                                    │
+│                                                                              │
+│    60 │   │   │   category=FutureWarning,                                    │
+│    61 │   │   │   stacklevel=3,  # Would be 2, but the decorator adds a leve │
+│    62 │   │   )                                                              │
+│ ❱  63 │   │   return func(*args, **kwargs)                                   │
+│    64 │                                                                      │
+│    65 │   return decorator(__wrapper)                                        │
+│    66                                                                        │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │            args = (                                                      │ │
+│ │                   │                                                      │ │
+│ │                   'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_… │ │
+│ │                   │   0.0,                                               │ │
+│ │                   │   None,                                              │ │
+│ │                   │   <class 'numpy.float32'>                            │ │
+│ │                   )                                                      │ │
+│ │          kwargs = {}                                                     │ │
+│ │         version = '0.10.0'                                               │ │
+│ │ version_removed = '1.0'                                                  │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:240 in         │
+│ __audioread_load                                                             │
+│                                                                              │
+│    237 │   │   reader = path                                                 │
+│    238 │   else:                                                             │
+│    239 │   │   # If the input was not an audioread object, try to open it    │
+│ ❱  240 │   │   reader = audioread.audio_open(path)                           │
+│    241 │                                                                     │
+│    242 │   with reader as input_file:                                        │
+│    243 │   │   sr_native = input_file.samplerate                             │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │      buf = []                                                            │ │
+│ │ duration = None                                                          │ │
+│ │   offset = 0.0                                                           │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/audioread/__init__.py:126 in         │
+│ audio_open                                                                   │
+│                                                                              │
+│   123 │                                                                      │
+│   124 │   for BackendClass in backends:                                      │
+│   125 │   │   try:                                                           │
+│ ❱ 126 │   │   │   return BackendClass(path)                                  │
+│   127 │   │   except DecodeError:                                            │
+│   128 │   │   │   pass                                                       │
+│   129                                                                        │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ backends = [                                                             │ │
+│ │            │   <class 'audioread.rawread.RawAudioFile'>,                 │ │
+│ │            │   <class 'audioread.ffdec.FFmpegAudioFile'>                 │ │
+│ │            ]                                                             │ │
+│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+│                                                                              │
+│ /usr/local/lib/python3.12/dist-packages/audioread/rawread.py:59 in __init__  │
+│                                                                              │
+│    56 │   library modules ``wave``, ``aifc``, and ``sunau``.                 │
+│    57 │   """                                                                │
+│    58 │   def __init__(self, filename):                                      │
+│ ❱  59 │   │   self._fh = open(filename, 'rb')                                │
+│    60 │   │                                                                  │
+│    61 │   │   try:                                                           │
+│    62 │   │   │   self._file = aifc.open(self._fh)                           │
+│                                                                              │
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
+│ │ filename = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
+│ │     self = <audioread.rawread.RawAudioFile object at 0x7a88147875c0>     │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+FileNotFoundError: [Errno 2] No such file or directory: 
+'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71099853515625.wav'

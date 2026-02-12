@@ -139,8 +139,8 @@ def build_manifest_from_coraa(
     import soundfile as sf
     import numpy as np
 
-    output_path = Path(output_path)
-    audio_dir = Path(audio_dir)
+    output_path = Path(output_path).resolve()
+    audio_dir = Path(audio_dir).resolve()
     ensure_dir(output_path.parent)
     ensure_dir(audio_dir)
 
@@ -243,6 +243,18 @@ def build_manifest_from_coraa(
         })
 
     save_jsonl(output_path, rows)
+
+    # --- Verify exported audio files actually exist ---
+    missing_files = [r["path"] for r in rows if not Path(r["path"]).exists()]
+    if missing_files:
+        logger.error(
+            "%d of %d WAV files are MISSING after export. First 5: %s",
+            len(missing_files), len(rows), missing_files[:5],
+        )
+        raise RuntimeError(
+            f"{len(missing_files)} of {len(rows)} WAV files were not written. "
+            f"First missing: {missing_files[0]}"
+        )
 
     # --- Summary ---
     result_df = pd.DataFrame(rows)

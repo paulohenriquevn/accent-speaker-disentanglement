@@ -4,6 +4,7 @@
 
 ### Added
 - CORAA-MUPE-ASR dataset support with `build-coraa` CLI command, automatic state-to-region mapping, and configurable filters (duration, quality, regions, max samples per speaker) (#0)
+- Complete CORAA-MUPE experiment notebook (`notebooks/stage1_5_coraa_mupe.ipynb`) for running the full Stage 1.5 audit end-to-end on Colab with GPU (#0)
 - Initial Stage 1.5 pipeline scaffolding, configuration template, and CLI entrypoint (#0)
 - Feature extraction modules (acoustic, ECAPA, SSL, backbone hooks) with Typer CLI (#0)
 - Data manifest utilities, synthetic helpers, and speaker-disjoint splitting (#0)
@@ -34,3 +35,8 @@
 - Harden report generation paths and include text-robustness heatmaps/metrics (#0)
 - Improve RSA computation to avoid diagonal bias and mismatched similarity/distance scales (#0)
 - Validate NPZ feature keys to fail fast on inconsistent feature stores (#0)
+- Fix audio export in `build_manifest_from_coraa` — stop using `.to_pandas()` for audio column (which loses decoded arrays) and use HF dataset native decoding via `.select()` iteration instead (#0)
+- Fix `str.replace('.', '_')` in dataset builder to use `regex=False`, preventing `.` from matching any character (#0)
+- Use absolute paths in `build_manifest_from_coraa` manifest to prevent FileNotFoundError when CWD differs between dataset build and feature extraction (#0)
+- Add post-export WAV verification in `build_manifest_from_coraa` to fail fast if audio files were not written (#0)
+- Notebook validation cell now checks ALL audio paths exist before feature extraction instead of sampling 5 (#0)

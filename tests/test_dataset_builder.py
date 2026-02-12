@@ -155,7 +155,7 @@ class TestBuildManifestFromCoraa:
         with patch(_PATCH_TARGET, return_value=_mock_load_dataset(df)):
             result = build_manifest_from_coraa(output, audio_dir)
 
-        assert result == output
+        assert result == output.resolve()
         assert output.exists()
         lines = output.read_text().strip().split("\n")
         assert len(lines) == 6
