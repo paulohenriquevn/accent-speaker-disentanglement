@@ -76,8 +76,14 @@ class ProbeRunner:
 
         chance_accent = 1.0 / len(np.unique(self.accents))
         chance_speaker = 1.0 / len(np.unique(self.speakers))
-        leakage_a2s = self._train_metric(matrix, self.speakers, speaker_split.train, speaker_split.test, metric="acc")
-        leakage_s2a = self._train_metric(matrix, self.accents, accent_split.train, accent_split.test, metric="f1")
+
+        # Cross-prediction leakage (PRD Experiment 4):
+        # leakage_a2s: using the accent-oriented split, predict *speakers*.
+        #   High value means accent features leak speaker identity.
+        # leakage_s2a: using the speaker-oriented split, predict *accents*.
+        #   High value means speaker features leak accent information.
+        leakage_a2s = self._train_metric(matrix, self.speakers, accent_split.train, accent_split.test, metric="acc")
+        leakage_s2a = self._train_metric(matrix, self.accents, speaker_split.train, speaker_split.test, metric="f1")
         rsa_acc = rsa_against_labels(matrix, self.accents)
         rsa_spk = rsa_against_labels(matrix, self.speakers)
         cka_acc = linear_cka(matrix, _one_hot(self.accents))

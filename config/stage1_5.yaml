@@ -43,7 +43,7 @@ backbone:
     speaker: "ryan"
     texts_path: data/texts.jsonl
     output_dir: gen/synthetic_audio
-    max_new_tokens: 2048
+    max_new_tokens: 512
 
 ssl:
   model: wavlm_large

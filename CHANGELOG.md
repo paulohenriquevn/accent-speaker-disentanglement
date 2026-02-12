@@ -19,9 +19,19 @@
 - Add critical-path tests for decision logic, backbone extraction, and end-to-end pipeline (#0)
 
 ### Changed
+- Reduce backbone `max_new_tokens` from 2048 to 512 — full autoregressive generation is unnecessary for hook-based feature capture; estimated ~4x speedup on the 6290-entry extraction loop (#0)
 - Replace the SSL extractor's s3prl dependency with Hugging Face Transformers to avoid SoX requirements (#0)
+- PRD section 7.1 now references HF Transformers instead of S3PRL, matching the actual implementation (#0)
+
+### Added
+- Domain comparison bar chart (`domain_comparison_chart`) comparing Accent F1 across Real Audio, SSL, and Backbone feature spaces — addresses PRD deliverable 11.3 (#0)
+- Report template now includes LoRA recommendation section, risk diagnostic, and embedded domain comparison chart — addresses PRD deliverable 11.4 (#0)
+- Backbone adapter saves generated synthetic audio as WAV files when `generation_output_dir` is configured, instead of discarding the generated waveforms (#0)
+- `Manifest.validate_minimums()` method that validates minimum speakers per accent (≥8) and minimum utterances per speaker (≥30), with warnings and hard failure for <2 accents (#0)
+- PRD section 6 now accepts both controlled speech (Option A) and spontaneous speech like CORAA-MUPE (Option B), with adapted text-robustness methodology (#0)
 
 ### Fixed
+- Fix leakage metrics using wrong cross-splits — `leakage_a2s` was using `speaker_split` (duplicate of `speaker_acc`) and `leakage_s2a` was using `accent_split` (duplicate of `accent_f1`); now `leakage_a2s` uses `accent_split` to predict speakers and `leakage_s2a` uses `speaker_split` to predict accents, measuring true cross-space leakage (#0)
 - Colab notebook now auto-generates default texts and uses consistent paths for backbone feature extraction (#0)
 - Fix `map_state_to_region()` to use case-insensitive matching — CORAA-MUPE-ASR uses title-case prepositions (e.g. "Rio Grande Do Sul") which silently dropped all Sul speakers, reducing the experiment from 3 accents to 2 (#0)
 - Fix audio export compatibility with HuggingFace `datasets` v4+ — extract audio via `_extract_audio()` helper that handles plain dicts, datasets `AudioDecoder` with subscript support, and raw torchcodec `AudioDecoder` via native `.get_all_samples()` API (#0)
@@ -48,3 +58,5 @@
 - Notebook cell 3.1 (texts.json) now self-contained — reloads manifest from disk instead of depending on `df_manifest` variable from a prior cell (#0)
 - Fix backbone CLI `--layers` syntax in notebooks — Typer requires `--layers X --layers Y` per item, not space-separated values after a single flag (#0)
 - Fix `text_id` mismatch between manifest and `texts.json` — pandas `.astype(str)` truncates float32 values (e.g. `182.711` instead of `182.71099853515625`), causing `KeyError` in backbone extractor; manifest builder now uses `str(float(...))` and notebook cell 3.1 uses `.map(str)` for consistent full-precision text IDs (#0)
+- Fix `generate_custom_voice` AttributeError — `AutoModel.from_pretrained()` returns the raw `Qwen3TTSForConditionalGeneration` which lacks high-level generation methods; adapter now loads via `Qwen3TTSModel.from_pretrained()` (the qwen-tts wrapper) and exposes the inner raw HF model for hook registration (#0)
+- Fix bfloat16 numpy conversion error in backbone feature pooling — PyTorch `.numpy()` does not support `bfloat16`; `_pool_tensor` now upcasts to `float32` before conversion (#0)

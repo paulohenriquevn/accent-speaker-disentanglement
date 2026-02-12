@@ -16,15 +16,29 @@
 
 ## Heatmaps
 
-1. `layer × F1_accent`
-2. `layer × leakage`
-3. `layer × text robustness`
+1. `layer × F1_accent` — see `figures/accent_f1.png`
+2. `layer × leakage` — see `figures/leakage.png`
+3. `layer × text robustness` — see `figures/accent_text_robustness.png`
+
+## Domain Comparison
+
+Comparison of Accent F1 across Real Audio, SSL upstream, and Backbone TTS features:
+
+![Domain Comparison](figures/domain_comparison.png)
 
 ## Decision
 
 - **Best representation:** {{ best_layer }}
 - **Decision:** {{ decision }}
 - **Rationale:** {{ rationale }}
+
+## LoRA Recommendation
+
+{{ lora_recommendation }}
+
+## Risk Diagnostic
+
+{{ risk_diagnostic }}
 
 ## Notes
 

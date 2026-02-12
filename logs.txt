@@ -1,294 +1,129 @@
 /usr/local/lib/python3.12/dist-packages/torch/backends/__init__.py:46: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
   self.setter(val)
-2026-02-12 01:25:03.749250: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2026-02-12 01:25:03.769216: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-02-12 08:39:26.307946: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-02-12 08:39:26.327239: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-E0000 00:00:1770859503.792435   24562 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
-E0000 00:00:1770859503.799922   24562 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
-W0000 00:00:1770859503.819805   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1770859503.819830   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1770859503.819833   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1770859503.819835   24562 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-2026-02-12 01:25:03.824926: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+E0000 00:00:1770885566.349781   16858 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1770885566.357199   16858 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1770885566.376291   16858 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770885566.376323   16858 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770885566.376327   16858 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1770885566.376329   16858 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2026-02-12 08:39:26.381207: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-Acoustic features:   0% 0/5930 [00:00<?, ?it/s]/content/stage1_5_repo/stage1_5/features/acoustic.py:31: UserWarning: PySoundFile failed. Trying audioread instead.
-  y, sr = librosa.load(wav_path, sr=self.cfg.sample_rate)
-/usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
-	Deprecated as of librosa version 0.10.0.
-	It will be removed in librosa version 1.0.
-  y, sr_native = __audioread_load(path, offset, duration, dtype)
-Acoustic features:   0% 0/5930 [00:00<?, ?it/s]
-╭───────────────────── Traceback (most recent call last) ──────────────────────╮
-│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:176 in load    │
-│                                                                              │
-│    173 │   else:                                                             │
-│    174 │   │   # Otherwise try soundfile first, and then fall back if necess │
-│    175 │   │   try:                                                          │
-│ ❱  176 │   │   │   y, sr_native = __soundfile_load(path, offset, duration, d │
-│    177 │   │                                                                 │
-│    178 │   │   except sf.SoundFileRuntimeError as exc:                       │
-│    179 │   │   │   # If soundfile failed, try audioread instead              │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ duration = None                                                          │ │
-│ │     mono = True                                                          │ │
-│ │   offset = 0.0                                                           │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ │ res_type = 'soxr_hq'                                                     │ │
-│ │       sr = 16000                                                         │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:209 in         │
-│ __soundfile_load                                                             │
-│                                                                              │
-│    206 │   │   context = path                                                │
-│    207 │   else:                                                             │
-│    208 │   │   # Otherwise, create the soundfile object                      │
-│ ❱  209 │   │   context = sf.SoundFile(path)                                  │
-│    210 │                                                                     │
-│    211 │   with context as sf_desc:                                          │
-│    212 │   │   sr_native = sf_desc.samplerate                                │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ duration = None                                                          │ │
-│ │   offset = 0.0                                                           │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/soundfile.py:690 in __init__         │
-│                                                                              │
-│    687 │   │   self._bitrate_mode = bitrate_mode                             │
-│    688 │   │   self._info = _create_info_struct(file, mode, samplerate, chan │
-│    689 │   │   │   │   │   │   │   │   │   │    format, subtype, endian)     │
-│ ❱  690 │   │   self._file = self._open(file, mode_int, closefd)              │
-│    691 │   │   if set(mode).issuperset('r+') and self.seekable():            │
-│    692 │   │   │   # Move write position to 0 (like in Python file objects)  │
-│    693 │   │   │   self.seek(0)                                              │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │      bitrate_mode = None                                                 │ │
-│ │          channels = None                                                 │ │
-│ │           closefd = True                                                 │ │
-│ │ compression_level = None                                                 │ │
-│ │            endian = None                                                 │ │
-│ │              file = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_18… │ │
-│ │            format = None                                                 │ │
-│ │              mode = 'r'                                                  │ │
-│ │          mode_int = 16                                                   │ │
-│ │        samplerate = None                                                 │ │
-│ │              self = SoundFile('data/wav/coraa/MA_HV001/MA_HV001_SE_pc_m… │ │
-│ │                     mode='r', samplerate=0, channels=0, format='FILE',   │ │
-│ │                     subtype='FILE', endian='FILE')                       │ │
-│ │           subtype = None                                                 │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/soundfile.py:1265 in _open           │
-│                                                                              │
-│   1262 │   │   if file_ptr == _ffi.NULL:                                     │
-│   1263 │   │   │   # get the actual error code                               │
-│   1264 │   │   │   err = _snd.sf_error(file_ptr)                             │
-│ ❱ 1265 │   │   │   raise LibsndfileError(err, prefix="Error opening {0!r}: " │
-│   1266 │   │   if mode_int == _snd.SFM_WRITE:                                │
-│   1267 │   │   │   # Due to a bug in libsndfile version <= 1.0.25, frames != │
-│   1268 │   │   │   # when opening a named pipe in SFM_WRITE mode.            │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │      closefd = True                                                      │ │
-│ │          err = 2                                                         │ │
-│ │         file = b'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71… │ │
-│ │     file_ptr = <cdata 'struct SNDFILE_tag *' NULL>                       │ │
-│ │     mode_int = 16                                                        │ │
-│ │ openfunction = <cdata 'struct SNDFILE_tag *(*)(char *, int, struct       │ │
-│ │                SF_INFO *)' 0x7a8822ab991e>                               │ │
-│ │         self = SoundFile('data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv0… │ │
-│ │                mode='r', samplerate=0, channels=0, format='FILE',        │ │
-│ │                subtype='FILE', endian='FILE')                            │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-╰──────────────────────────────────────────────────────────────────────────────╯
-LibsndfileError: Error opening 
-'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71099853515625.wav': System
-error.
 
-During handling of the above exception, another exception occurred:
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+ 
+/bin/sh: 1: sox: not found
+WARNING:sox:SoX could not be found!
 
-╭───────────────────── Traceback (most recent call last) ──────────────────────╮
-│ /content/stage1_5_repo/stage1_5/features/cli.py:20 in acoustic               │
-│                                                                              │
-│   17                                                                         │
-│   18 @app.command()                                                          │
-│   19 def acoustic(manifest: Path, output: Path, sample_rate: int = 16000) -> │
-│ ❱ 20 │   extract_acoustic_cli(manifest, output, sample_rate)                 │
-│   21                                                                         │
-│   22                                                                         │
-│   23 @app.command()                                                          │
-│                                                                              │
-│ ╭──────────────────────── locals ────────────────────────╮                   │
-│ │    manifest = PosixPath('data/manifest.jsonl')         │                   │
-│ │      output = PosixPath('artifacts/features/acoustic') │                   │
-│ │ sample_rate = 16000                                    │                   │
-│ ╰────────────────────────────────────────────────────────╯                   │
-│                                                                              │
-│ /content/stage1_5_repo/stage1_5/features/acoustic.py:84 in                   │
-│ extract_acoustic_cli                                                         │
-│                                                                              │
-│   81 def extract_acoustic_cli(manifest_path: Path, output_dir: Path, sample_ │
-│   82 │   manifest = Manifest.from_jsonl(manifest_path)                       │
-│   83 │   extractor = AcousticFeatureExtractor(AcousticFeatureConfig(sample_r │
-│ ❱ 84 │   extractor.process_manifest(manifest, output_dir)                    │
-│   85                                                                         │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │     extractor = <stage1_5.features.acoustic.AcousticFeatureExtractor     │ │
-│ │                 object at 0x7a8821685dc0>                                │ │
-│ │      manifest = <stage1_5.data.manifest.Manifest object at               │ │
-│ │                 0x7a8821685550>                                          │ │
-│ │ manifest_path = PosixPath('data/manifest.jsonl')                         │ │
-│ │    output_dir = PosixPath('artifacts/features/acoustic')                 │ │
-│ │   sample_rate = 16000                                                    │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /content/stage1_5_repo/stage1_5/features/acoustic.py:77 in process_manifest  │
-│                                                                              │
-│   74 │   def process_manifest(self, manifest: Manifest, output_dir: str | Pa │
-│   75 │   │   ensure_dir(output_dir)                                          │
-│   76 │   │   for entry in tqdm(manifest, desc="Acoustic features"):          │
-│ ❱ 77 │   │   │   feats = self.extract_file(entry.path)                       │
-│   78 │   │   │   save_npz_feature(output_dir, entry.utt_id, feats)           │
-│   79                                                                         │
-│   80                                                                         │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │      entry = ManifestEntry(                                              │ │
-│ │              │   utt_id='MA_HV001_SE_pc_ma_hv001_182_71099853515625',    │ │
-│ │              │                                                           │ │
-│ │              path='data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_… │ │
-│ │              │   speaker='MA_HV001',                                     │ │
-│ │              │   accent='SE',                                            │ │
-│ │              │   text_id='pc_ma_hv001_182_71099853515625',               │ │
-│ │              │   source='real'                                           │ │
-│ │              )                                                           │ │
-│ │   manifest = <stage1_5.data.manifest.Manifest object at 0x7a8821685550>  │ │
-│ │ output_dir = PosixPath('artifacts/features/acoustic')                    │ │
-│ │       self = <stage1_5.features.acoustic.AcousticFeatureExtractor object │ │
-│ │              at 0x7a8821685dc0>                                          │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /content/stage1_5_repo/stage1_5/features/acoustic.py:31 in extract_file      │
-│                                                                              │
-│   28 │   │   self.cfg = cfg or AcousticFeatureConfig()                       │
-│   29 │                                                                       │
-│   30 │   def extract_file(self, wav_path: str | Path) -> Dict[str, np.ndarra │
-│ ❱ 31 │   │   y, sr = librosa.load(wav_path, sr=self.cfg.sample_rate)         │
-│   32 │   │   duration = len(y) / self.cfg.sample_rate                        │
-│   33 │   │   if duration == 0:                                               │
-│   34 │   │   │   raise ValueError(f"Empty audio: {wav_path}")                │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │     self = <stage1_5.features.acoustic.AcousticFeatureExtractor object   │ │
-│ │            at 0x7a8821685dc0>                                            │ │
-│ │ wav_path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:184 in load    │
-│                                                                              │
-│    181 │   │   │   │   warnings.warn(                                        │
-│    182 │   │   │   │   │   "PySoundFile failed. Trying audioread instead.",  │
-│    183 │   │   │   │   )                                                     │
-│ ❱  184 │   │   │   │   y, sr_native = __audioread_load(path, offset, duratio │
-│    185 │   │   │   else:                                                     │
-│    186 │   │   │   │   raise exc                                             │
-│    187                                                                       │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ duration = None                                                          │ │
-│ │     mono = True                                                          │ │
-│ │   offset = 0.0                                                           │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ │ res_type = 'soxr_hq'                                                     │ │
-│ │       sr = 16000                                                         │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│ in __audioread_load:2                                                        │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ duration = None                                                          │ │
-│ │   offset = 0.0                                                           │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/librosa/util/decorators.py:63 in     │
-│ __wrapper                                                                    │
-│                                                                              │
-│    60 │   │   │   category=FutureWarning,                                    │
-│    61 │   │   │   stacklevel=3,  # Would be 2, but the decorator adds a leve │
-│    62 │   │   )                                                              │
-│ ❱  63 │   │   return func(*args, **kwargs)                                   │
-│    64 │                                                                      │
-│    65 │   return decorator(__wrapper)                                        │
-│    66                                                                        │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │            args = (                                                      │ │
-│ │                   │                                                      │ │
-│ │                   'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_… │ │
-│ │                   │   0.0,                                               │ │
-│ │                   │   None,                                              │ │
-│ │                   │   <class 'numpy.float32'>                            │ │
-│ │                   )                                                      │ │
-│ │          kwargs = {}                                                     │ │
-│ │         version = '0.10.0'                                               │ │
-│ │ version_removed = '1.0'                                                  │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/librosa/core/audio.py:240 in         │
-│ __audioread_load                                                             │
-│                                                                              │
-│    237 │   │   reader = path                                                 │
-│    238 │   else:                                                             │
-│    239 │   │   # If the input was not an audioread object, try to open it    │
-│ ❱  240 │   │   reader = audioread.audio_open(path)                           │
-│    241 │                                                                     │
-│    242 │   with reader as input_file:                                        │
-│    243 │   │   sr_native = input_file.samplerate                             │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │      buf = []                                                            │ │
-│ │ duration = None                                                          │ │
-│ │   offset = 0.0                                                           │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/audioread/__init__.py:126 in         │
-│ audio_open                                                                   │
-│                                                                              │
-│   123 │                                                                      │
-│   124 │   for BackendClass in backends:                                      │
-│   125 │   │   try:                                                           │
-│ ❱ 126 │   │   │   return BackendClass(path)                                  │
-│   127 │   │   except DecodeError:                                            │
-│   128 │   │   │   pass                                                       │
-│   129                                                                        │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ backends = [                                                             │ │
-│ │            │   <class 'audioread.rawread.RawAudioFile'>,                 │ │
-│ │            │   <class 'audioread.ffdec.FFmpegAudioFile'>                 │ │
-│ │            ]                                                             │ │
-│ │     path = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-│                                                                              │
-│ /usr/local/lib/python3.12/dist-packages/audioread/rawread.py:59 in __init__  │
-│                                                                              │
-│    56 │   library modules ``wave``, ``aifc``, and ``sunau``.                 │
-│    57 │   """                                                                │
-│    58 │   def __init__(self, filename):                                      │
-│ ❱  59 │   │   self._fh = open(filename, 'rb')                                │
-│    60 │   │                                                                  │
-│    61 │   │   try:                                                           │
-│    62 │   │   │   self._file = aifc.open(self._fh)                           │
-│                                                                              │
-│ ╭───────────────────────────────── locals ─────────────────────────────────╮ │
-│ │ filename = 'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_7109985… │ │
-│ │     self = <audioread.rawread.RawAudioFile object at 0x7a88147875c0>     │ │
-│ ╰──────────────────────────────────────────────────────────────────────────╯ │
-╰──────────────────────────────────────────────────────────────────────────────╯
-FileNotFoundError: [Errno 2] No such file or directory: 
-'data/wav/coraa/MA_HV001/MA_HV001_SE_pc_ma_hv001_182_71099853515625.wav'
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+    
+`torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files: 100% 4/4 [00:00<00:00, 50994.58it/s]
+Backbone features:   0% 0/6290 [00:00<?, ?it/s]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 1/6290 [00:14<24:54:37, 14.26s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 2/6290 [00:32<28:57:21, 16.58s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 3/6290 [00:41<22:49:37, 13.07s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 4/6290 [00:50<20:04:10, 11.49s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 5/6290 [00:59<18:41:13, 10.70s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 6/6290 [01:19<23:55:00, 13.70s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 7/6290 [01:44<30:12:56, 17.31s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 8/6290 [01:58<28:26:49, 16.30s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 9/6290 [02:03<22:30:42, 12.90s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 10/6290 [02:28<28:51:44, 16.55s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 11/6290 [02:34<23:05:27, 13.24s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 12/6290 [02:50<24:34:09, 14.09s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 13/6290 [03:01<23:02:42, 13.22s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 14/6290 [03:10<20:58:04, 12.03s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 15/6290 [03:15<17:14:57,  9.90s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 16/6290 [03:22<15:54:31,  9.13s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 17/6290 [03:34<17:10:24,  9.86s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 18/6290 [03:53<22:06:04, 12.69s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 19/6290 [04:05<21:35:23, 12.39s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 20/6290 [04:15<20:20:00, 11.67s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 21/6290 [04:28<21:04:49, 12.11s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 22/6290 [04:41<21:47:25, 12.52s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 23/6290 [04:54<21:48:42, 12.53s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 24/6290 [05:04<20:13:26, 11.62s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 25/6290 [05:13<19:17:59, 11.09s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 26/6290 [05:22<18:05:32, 10.40s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 27/6290 [05:29<16:13:49,  9.33s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 28/6290 [05:45<19:38:18, 11.29s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 29/6290 [06:03<23:06:31, 13.29s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 30/6290 [06:25<27:59:14, 16.09s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   0% 31/6290 [06:37<25:23:04, 14.60s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 32/6290 [06:52<26:02:28, 14.98s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 33/6290 [07:08<26:31:44, 15.26s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 34/6290 [07:17<23:14:19, 13.37s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 35/6290 [07:42<29:10:51, 16.79s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 36/6290 [07:54<26:31:34, 15.27s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 37/6290 [08:02<22:42:36, 13.07s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 38/6290 [08:25<28:03:18, 16.15s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 39/6290 [08:35<25:00:01, 14.40s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 40/6290 [08:45<22:20:32, 12.87s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 41/6290 [08:59<23:07:29, 13.32s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 42/6290 [09:25<29:47:04, 17.16s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 43/6290 [09:43<30:03:32, 17.32s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 44/6290 [09:54<26:49:32, 15.46s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 45/6290 [10:12<27:53:30, 16.08s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 46/6290 [10:29<28:32:03, 16.45s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 47/6290 [10:39<25:24:10, 14.65s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 48/6290 [10:53<24:52:23, 14.35s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 49/6290 [11:06<24:25:24, 14.09s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 50/6290 [11:18<23:04:12, 13.31s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 51/6290 [11:27<20:38:04, 11.91s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 52/6290 [11:35<18:52:29, 10.89s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 53/6290 [11:56<24:05:06, 13.90s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 54/6290 [12:14<25:57:56, 14.99s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 55/6290 [12:41<32:11:49, 18.59s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 56/6290 [12:54<29:47:11, 17.20s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 57/6290 [13:05<26:30:39, 15.31s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 58/6290 [13:14<23:14:30, 13.43s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 59/6290 [13:40<29:23:02, 16.98s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 60/6290 [14:01<31:46:39, 18.36s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 61/6290 [14:10<26:35:09, 15.37s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 62/6290 [14:25<26:23:37, 15.26s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 63/6290 [14:48<30:46:40, 17.79s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 64/6290 [15:23<39:16:07, 22.71s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 65/6290 [15:35<34:11:22, 19.77s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 66/6290 [16:01<37:20:29, 21.60s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 67/6290 [16:12<31:39:21, 18.31s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 68/6290 [16:42<37:50:42, 21.90s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 69/6290 [17:05<38:04:46, 22.04s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 70/6290 [17:12<30:43:29, 17.78s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 71/6290 [17:27<29:05:02, 16.84s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 72/6290 [17:37<25:29:05, 14.75s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 73/6290 [17:45<21:56:51, 12.71s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 74/6290 [18:00<23:00:13, 13.32s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 75/6290 [18:21<26:54:03, 15.58s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 76/6290 [18:35<26:34:09, 15.39s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 77/6290 [18:45<23:25:05, 13.57s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 78/6290 [18:59<23:45:16, 13.77s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 79/6290 [19:14<24:19:08, 14.10s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 80/6290 [19:27<23:35:53, 13.68s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 81/6290 [19:46<26:36:36, 15.43s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 82/6290 [19:57<24:21:38, 14.13s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 83/6290 [20:18<27:37:43, 16.02s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 84/6290 [21:06<44:10:09, 25.62s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 85/6290 [21:26<41:38:36, 24.16s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 86/6290 [21:42<37:24:59, 21.71s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 87/6290 [21:58<34:24:52, 19.97s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 88/6290 [22:31<40:53:07, 23.73s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 89/6290 [22:46<36:38:43, 21.27s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 90/6290 [23:06<35:52:51, 20.83s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 91/6290 [23:23<33:38:42, 19.54s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 92/6290 [23:37<30:48:31, 17.89s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 93/6290 [24:10<38:57:40, 22.63s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   1% 94/6290 [24:45<45:03:40, 26.18s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   2% 95/6290 [25:17<47:55:37, 27.85s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   2% 96/6290 [25:57<54:33:37, 31.71s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   2% 97/6290 [26:16<48:02:49, 27.93s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   2% 98/6290 [26:34<42:39:54, 24.81s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+Backbone features:   2% 99/6290 [26:50<38:18:43, 22.28s/it]Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.

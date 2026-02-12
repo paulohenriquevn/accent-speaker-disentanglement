@@ -90,15 +90,25 @@ Accent e speaker não são mutuamente colapsados (baixo leakage cruzado).
 
 * 3 regiões brasileiras
 * ≥ 8 speakers por região
-* ≥ 30 frases comuns a todos
+* ≥ 30 utterances por speaker
 * Split speaker-disjoint obrigatório
 * Manifest versionado
 
-### Controle
+### Fontes de dados aceitas
 
-* Mesmo texto para todos
-* Estilo neutro
-* Sem atuação
+#### Opção A — Fala controlada (leitura)
+* Mesmo texto para todos (≥ 30 frases comuns)
+* Estilo neutro, sem atuação
+* Robustez a texto: treina em subset A de frases, testa em subset B
+
+#### Opção B — Fala espontânea (ex: CORAA-MUPE)
+* Textos não compartilhados entre speakers (cada utterance tem texto único)
+* Robustez a texto: usa text-disjoint split (GroupShuffleSplit por text_id), garantindo que nenhum text_id do treino aparece no teste
+* Limitação: confounding entre conteúdo e sotaque não pode ser eliminado, apenas atenuado via diversidade de textos por speaker
+
+### Nota sobre robustez a texto
+
+A métrica `accent_text_drop` mede a queda de F1 entre o split speaker-disjoint padrão e o split text-disjoint. Em fala espontânea, textos são únicos por utterance, então o split text-disjoint age como um split aleatório adicional. A queda ≤ 10pp permanece como threshold, mas deve ser interpretada com cautela em corpora espontâneos.
 
 ---
 
@@ -118,7 +128,7 @@ Para cada utterance:
 
    * ECAPA ou x-vector
 
-3. Representações SSL (HuBERT/WavLM via S3PRL)
+3. Representações SSL (HuBERT/WavLM via HF Transformers)
 
 4. Representações internas do backbone TTS
 

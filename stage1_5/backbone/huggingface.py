@@ -4,7 +4,8 @@ from __future__ import annotations
 
 # pyright: ignore
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Callable, Dict, Optional, cast
 
 import torch
@@ -24,6 +25,7 @@ class HFAttachConfig:
     generation_speaker: str = "ryan"
     generation_instruct: str | None = None
     generation_max_new_tokens: int = 256
+    generation_output_dir: str | None = None
 
 
 class HuggingFaceBackboneAdapter:
@@ -104,6 +106,7 @@ class HuggingFaceBackboneAdapter:
                 "speaker": self.cfg.generation_speaker,
                 "instruct": self.cfg.generation_instruct,
                 "max_new_tokens": self.cfg.generation_max_new_tokens,
+                "utt_id": entry.utt_id,
             }
         if self._encoder is None:
             raise RuntimeError("Text encoder is not initialized")
@@ -115,6 +118,10 @@ class HuggingFaceBackboneAdapter:
         """
         Execute forward pass. For Qwen3-TTS, inputs contains generation params.
         For other models, inputs contains tokenized tensors.
+        
+        When ``cfg.generation_output_dir`` is set and the model is Qwen3-TTS,
+        the generated audio waveform is saved as a WAV file named after the
+        utterance id (``inputs["utt_id"]``).
         
         Args:
             inputs: Model-specific input dict (generation params or tensors)
@@ -130,7 +137,7 @@ class HuggingFaceBackboneAdapter:
                     # ``self._tts_wrapper.generate_custom_voice()`` internally
                     # calls ``self.model.generate()`` which triggers all hooks
                     # registered on the raw HF model's sub-modules.
-                    self._tts_wrapper.generate_custom_voice(
+                    result = self._tts_wrapper.generate_custom_voice(
                         text=inputs["text"],
                         language=inputs.get("language", "Portuguese"),
                         speaker=inputs.get("speaker", "ryan"),
@@ -138,12 +145,44 @@ class HuggingFaceBackboneAdapter:
                         non_streaming_mode=True,
                         max_new_tokens=inputs.get("max_new_tokens", 256),
                     )
+
+                    # Save generated audio if output_dir is configured
+                    if self.cfg.generation_output_dir and result is not None:
+                        self._save_audio(result, inputs.get("utt_id"))
+
                     # Return empty tensor - hooks already captured activations
                     return torch.empty(0)
                 raise ValueError(f"Unsupported qwen3_tts mode: {mode}")
 
             # For other models (seq2seq), inputs are already tensors
             return self.model(**inputs)
+
+    def _save_audio(self, result: Any, utt_id: str | None) -> None:
+        """Save generated audio waveform(s) as WAV files.
+
+        Args:
+            result: Tuple of ``(wavs: List[np.ndarray], sample_rate: int)``
+                    as returned by ``Qwen3TTSModel.generate_custom_voice()``.
+            utt_id: Utterance identifier used as the filename stem.
+        """
+        try:
+            import numpy as np
+            import soundfile as sf
+
+            wavs, sample_rate = result
+            out_dir = Path(self.cfg.generation_output_dir)  # type: ignore[arg-type]
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            for idx, wav in enumerate(wavs):
+                if utt_id is not None:
+                    stem = utt_id if len(wavs) == 1 else f"{utt_id}_{idx}"
+                else:
+                    stem = f"audio_{idx}"
+                out_path = out_dir / f"{stem}.wav"
+                sf.write(str(out_path), wav, sample_rate)
+        except Exception as e:
+            # Audio saving is best-effort — do not break feature extraction
+            print(f"Warning: Failed to save generated audio for {utt_id}: {e}")
 
     def resolve_layer(self, alias: str) -> Optional[torch.nn.Module]:
         """

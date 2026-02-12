@@ -285,6 +285,7 @@ def extract_backbone_cli(
     generation_speaker: str = "ryan",
     generation_instruct: str | None = None,
     generation_max_new_tokens: int = 256,
+    generation_output_dir: str | None = None,
     pooling: str = "mean",
     strict: bool = True,
 ) -> None:
@@ -309,6 +310,7 @@ def extract_backbone_cli(
             generation_speaker=generation_speaker,
             generation_instruct=generation_instruct,
             generation_max_new_tokens=generation_max_new_tokens,
+            generation_output_dir=generation_output_dir,
         )
     )
     cfg = BackboneFeatureConfig(layers=layers, pooling=pooling, strict=strict)
