@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import logging
-from collections import Counter
+import random
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Iterator, List, Sequence
+from typing import Iterable, Iterator, List, Optional, Sequence
 
 import pandas as pd
 
@@ -61,6 +62,33 @@ class Manifest:
 
     def accents(self) -> List[str]:
         return sorted({e.accent for e in self._entries})
+
+    def subsample_per_speaker(
+        self, max_per_speaker: int, seed: Optional[int] = 42
+    ) -> "Manifest":
+        """Return a new Manifest with at most *max_per_speaker* utterances per speaker.
+
+        Sampling is deterministic (seeded) to ensure reproducibility.
+        All speakers and accents are preserved.
+        """
+        by_speaker: dict[str, list[ManifestEntry]] = defaultdict(list)
+        for e in self._entries:
+            by_speaker[e.speaker].append(e)
+
+        rng = random.Random(seed)
+        sampled: list[ManifestEntry] = []
+        for speaker in sorted(by_speaker):
+            entries = by_speaker[speaker]
+            if len(entries) <= max_per_speaker:
+                sampled.extend(entries)
+            else:
+                sampled.extend(rng.sample(entries, max_per_speaker))
+
+        logger.info(
+            "Subsampled manifest: %d → %d entries (max %d per speaker)",
+            len(self._entries), len(sampled), max_per_speaker,
+        )
+        return Manifest(sampled)
 
     def validate_minimums(
         self,

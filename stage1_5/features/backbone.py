@@ -288,6 +288,7 @@ def extract_backbone_cli(
     generation_output_dir: str | None = None,
     pooling: str = "mean",
     strict: bool = True,
+    max_per_speaker: int | None = None,
 ) -> None:
     """
     CLI entrypoint for backbone feature extraction.
@@ -296,6 +297,8 @@ def extract_backbone_cli(
         layers = [l for l in layers[0].split(" ") if l]
 
     manifest = Manifest.from_jsonl(manifest_path)
+    if max_per_speaker is not None:
+        manifest = manifest.subsample_per_speaker(max_per_speaker)
     text_entries = json.loads(Path(text_json).read_text())
     texts = {item["text_id"]: item["text"] for item in text_entries}
 

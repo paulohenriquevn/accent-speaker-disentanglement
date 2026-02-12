@@ -78,7 +78,14 @@ class AcousticFeatureExtractor:
             save_npz_feature(output_dir, entry.utt_id, feats)
 
 
-def extract_acoustic_cli(manifest_path: Path, output_dir: Path, sample_rate: int = 16000) -> None:
+def extract_acoustic_cli(
+    manifest_path: Path,
+    output_dir: Path,
+    sample_rate: int = 16000,
+    max_per_speaker: int | None = None,
+) -> None:
     manifest = Manifest.from_jsonl(manifest_path)
+    if max_per_speaker is not None:
+        manifest = manifest.subsample_per_speaker(max_per_speaker)
     extractor = AcousticFeatureExtractor(AcousticFeatureConfig(sample_rate=sample_rate))
     extractor.process_manifest(manifest, output_dir)

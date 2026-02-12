@@ -141,8 +141,11 @@ def extract_ssl_cli(
     device: str = "cpu",
     torch_dtype: Optional[str] = None,
     pooling: str = "mean",
+    max_per_speaker: int | None = None,
 ) -> None:
     manifest = Manifest.from_jsonl(manifest_path)
+    if max_per_speaker is not None:
+        manifest = manifest.subsample_per_speaker(max_per_speaker)
     extractor = SSLFeatureExtractor(
         SSLConfig(model=model, layers=layers, device=device, torch_dtype=torch_dtype, pooling=pooling)
     )

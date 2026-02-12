@@ -74,7 +74,14 @@ class ECAPAExtractor:
             save_npz_feature(output_dir, entry.utt_id, feats)
 
 
-def extract_ecapa_cli(manifest_path: Path, output_dir: Path, device: str = "cpu") -> None:
+def extract_ecapa_cli(
+    manifest_path: Path,
+    output_dir: Path,
+    device: str = "cpu",
+    max_per_speaker: int | None = None,
+) -> None:
     manifest = Manifest.from_jsonl(manifest_path)
+    if max_per_speaker is not None:
+        manifest = manifest.subsample_per_speaker(max_per_speaker)
     extractor = ECAPAExtractor(ECAPAConfig(device=device))
     extractor.process_manifest(manifest, output_dir)
