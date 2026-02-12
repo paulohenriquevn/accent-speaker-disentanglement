@@ -209,8 +209,20 @@ def build_manifest_from_coraa(
     filtered_indices = df["_hf_index"].tolist()
     ds_filtered = ds.select(filtered_indices)
 
+    print(f"Exporting {len(filtered_indices)} audio files to {audio_dir} ...")
+
     rows: list[dict[str, str]] = []
-    for df_row, hf_row in zip(df.itertuples(), ds_filtered):
+    written = 0
+    skipped = 0
+    errors: list[str] = []
+
+    from tqdm import tqdm  # lazy import
+
+    for df_row, hf_row in tqdm(
+        zip(df.itertuples(), ds_filtered),
+        total=len(filtered_indices),
+        desc="Exporting audio",
+    ):
         speaker = str(df_row.speaker_code)
         region = str(df_row.region)
         audio_name = str(df_row.audio_name)
@@ -226,12 +238,23 @@ def build_manifest_from_coraa(
         # Export audio: the HF dataset decodes the audio column on access,
         # giving us {"path": ..., "array": np.ndarray, "sampling_rate": int}.
         if not wav_path.exists():
-            audio_data = hf_row["audio"]
-            sf.write(
-                str(wav_path),
-                np.asarray(audio_data["array"]),
-                audio_data["sampling_rate"],
-            )
+            try:
+                audio_data = hf_row["audio"]
+                audio_array = audio_data.get("array") if isinstance(audio_data, dict) else None
+                if audio_array is None:
+                    errors.append(f"{utt_id}: audio dict has no 'array' key (keys={list(audio_data.keys()) if isinstance(audio_data, dict) else type(audio_data)})")
+                    continue
+                sf.write(
+                    str(wav_path),
+                    np.asarray(audio_array),
+                    audio_data["sampling_rate"],
+                )
+                written += 1
+            except Exception as exc:
+                errors.append(f"{utt_id}: {exc}")
+                continue
+        else:
+            skipped += 1
 
         rows.append({
             "utt_id": utt_id,
@@ -241,6 +264,19 @@ def build_manifest_from_coraa(
             "text_id": text_id,
             "source": "real",
         })
+
+    print(f"Audio export done: {written} written, {skipped} cached, {len(errors)} errors")
+    if errors:
+        for e in errors[:10]:
+            print(f"  ERROR: {e}")
+        if len(errors) > 10:
+            print(f"  ... and {len(errors) - 10} more errors")
+
+    if not rows:
+        raise RuntimeError(
+            "No audio files were exported successfully. "
+            f"Total errors: {len(errors)}. First: {errors[0] if errors else 'N/A'}"
+        )
 
     save_jsonl(output_path, rows)
 

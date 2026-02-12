@@ -40,3 +40,6 @@
 - Use absolute paths in `build_manifest_from_coraa` manifest to prevent FileNotFoundError when CWD differs between dataset build and feature extraction (#0)
 - Add post-export WAV verification in `build_manifest_from_coraa` to fail fast if audio files were not written (#0)
 - Notebook validation cell now checks ALL audio paths exist before feature extraction instead of sampling 5 (#0)
+- Add tqdm progress bar and per-file error handling to audio export loop for visible progress in notebooks (#0)
+- Notebook cell 2.2 now calls `build_manifest_from_coraa()` directly via Python instead of CLI subprocess, ensuring tqdm and errors are visible (#0)
+- Notebook cell 3.1 (texts.json) now self-contained — reloads manifest from disk instead of depending on `df_manifest` variable from a prior cell (#0)
