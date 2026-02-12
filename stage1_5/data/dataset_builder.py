@@ -136,6 +136,8 @@ def build_manifest_from_coraa(
         The path where the manifest was written.
     """
     from datasets import load_dataset  # lazy import to avoid heavy startup
+    import soundfile as sf
+    import numpy as np
 
     output_path = Path(output_path)
     audio_dir = Path(audio_dir)
@@ -146,7 +148,14 @@ def build_manifest_from_coraa(
                 hf_dataset_name, hf_split)
     ds = load_dataset(hf_dataset_name, split=hf_split)
 
-    df = ds.to_pandas()  # type: ignore[union-attr]
+    # Convert metadata columns to pandas for fast filtering, but exclude the
+    # ``audio`` column.  When ``.to_pandas()`` serialises Audio features it
+    # stores raw bytes (``{"path": ..., "bytes": ...}``) instead of a decoded
+    # numpy array, so the audio data is unusable for writing WAV files.
+    # We will access the decoded audio via the original HF dataset later.
+    metadata_cols = [c for c in ds.column_names if c != "audio"]
+    df = ds.select_columns(metadata_cols).to_pandas()  # type: ignore[union-attr]
+    df["_hf_index"] = range(len(df))  # preserve original HF row indices
 
     # --- Filter: only interviewees (R) who have birth_state metadata ---
     df = df[df["speaker_type"] == "R"].copy()
@@ -186,7 +195,7 @@ def build_manifest_from_coraa(
             .apply(lambda g: g.head(max_samples_per_speaker))
         )
         logger.info("After max_samples_per_speaker=%d: %d rows",
-                     max_samples_per_speaker, len(df))
+                      max_samples_per_speaker, len(df))
 
     if df.empty:
         raise ValueError(
@@ -195,12 +204,17 @@ def build_manifest_from_coraa(
         )
 
     # --- Build manifest rows & export audio ---
+    # Select only the rows that survived filtering from the original HF dataset
+    # so that Audio decoding works correctly (returns ``array`` + ``sampling_rate``).
+    filtered_indices = df["_hf_index"].tolist()
+    ds_filtered = ds.select(filtered_indices)
+
     rows: list[dict[str, str]] = []
-    for _, row in df.iterrows():
-        speaker = str(row["speaker_code"])
-        region = str(row["region"])
-        audio_name = str(row["audio_name"])
-        start_time = str(row["start_time"]).replace(".", "_")
+    for df_row, hf_row in zip(df.itertuples(), ds_filtered):
+        speaker = str(df_row.speaker_code)
+        region = str(df_row.region)
+        audio_name = str(df_row.audio_name)
+        start_time = str(df_row.start_time).replace(".", "_")
         text_id = f"{audio_name}_{start_time}"
         utt_id = f"{speaker}_{region}_{text_id}"
 
@@ -209,24 +223,15 @@ def build_manifest_from_coraa(
         speaker_dir.mkdir(parents=True, exist_ok=True)
         wav_path = speaker_dir / f"{utt_id}.wav"
 
-        # Export audio from the HF dataset row
-        audio_data = row["audio"]
-        if isinstance(audio_data, dict) and "path" in audio_data:
-            # HF datasets stores audio as {"path": ..., "array": ..., "sampling_rate": ...}
-            # If the path exists on disk (streaming=False), reference it directly
-            hf_audio_path = audio_data.get("path")
-            if hf_audio_path and Path(hf_audio_path).exists():
-                wav_path = Path(hf_audio_path)
-            elif "array" in audio_data:
-                import soundfile as sf
-                import numpy as np
-                sf.write(
-                    str(wav_path),
-                    np.asarray(audio_data["array"]),
-                    audio_data.get("sampling_rate", 16000),
-                )
-        elif isinstance(audio_data, str) and Path(audio_data).exists():
-            wav_path = Path(audio_data)
+        # Export audio: the HF dataset decodes the audio column on access,
+        # giving us {"path": ..., "array": np.ndarray, "sampling_rate": int}.
+        if not wav_path.exists():
+            audio_data = hf_row["audio"]
+            sf.write(
+                str(wav_path),
+                np.asarray(audio_data["array"]),
+                audio_data["sampling_rate"],
+            )
 
         rows.append({
             "utt_id": utt_id,

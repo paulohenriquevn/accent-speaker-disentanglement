@@ -87,21 +87,59 @@ def _make_fake_hf_dataframe(n: int = 10, **overrides: object) -> pd.DataFrame:
             "duration": 5.0,
             "normalized_text": f"texto normalizado {i}",
             "original_text": f"Texto Original {i}.",
-            "audio": {
-                "path": None,
-                "array": np.zeros(16000, dtype=np.float32),
-                "sampling_rate": 16000,
-            },
         }
         row.update(overrides)
         rows.append(row)
     return pd.DataFrame(rows)
 
 
-def _mock_load_dataset(df: pd.DataFrame) -> MagicMock:
-    """Create a mock that behaves like datasets.load_dataset()."""
+def _make_fake_audio_rows(n: int = 10) -> list[dict]:
+    """Build decoded audio dicts as returned by iterating over an HF dataset."""
+    return [
+        {
+            "array": np.zeros(16000, dtype=np.float32),
+            "sampling_rate": 16000,
+        }
+        for _ in range(n)
+    ]
+
+
+def _mock_load_dataset(df: pd.DataFrame, audio_rows: list[dict] | None = None) -> MagicMock:
+    """Create a mock that behaves like datasets.load_dataset().
+
+    The mock supports:
+    - ``.column_names`` — list of all columns including ``"audio"``
+    - ``.select_columns(cols).to_pandas()`` — returns *df* filtered to *cols*
+    - ``.select(indices)`` — returns an iterable of dicts with decoded ``audio``
+    """
+    if audio_rows is None:
+        audio_rows = _make_fake_audio_rows(len(df))
+
+    all_columns = list(df.columns) + ["audio"]
+
+    # select_columns mock: returns an object whose to_pandas() gives the df
+    # filtered to the requested columns (excluding "audio").
+    def _select_columns(cols):
+        available = [c for c in cols if c in df.columns]
+        sub_df = df[available].copy()
+        inner = MagicMock()
+        inner.to_pandas.return_value = sub_df
+        return inner
+
+    # select mock: given a list of integer indices, return an iterable of dicts
+    # that include the decoded audio under the "audio" key.
+    def _select(indices):
+        result = []
+        for idx in indices:
+            row_dict = df.iloc[idx].to_dict()
+            row_dict["audio"] = audio_rows[idx]
+            result.append(row_dict)
+        return result
+
     mock_ds = MagicMock()
-    mock_ds.to_pandas.return_value = df
+    mock_ds.column_names = all_columns
+    mock_ds.select_columns.side_effect = _select_columns
+    mock_ds.select.side_effect = _select
     return mock_ds
 
 
@@ -227,18 +265,18 @@ class TestBuildManifestFromCoraa:
         assert len(text_ids) == len(set(text_ids)), "text_ids must be unique per segment"
 
     def test_audio_export_writes_wav(self, tmp_path: Path) -> None:
-        """When HF audio has array data and no path on disk, WAV should be exported."""
+        """When HF audio has array data, WAV should be exported to disk."""
         df = _make_fake_hf_dataframe(1)
-        # Ensure audio path is None so it falls to array export
-        df.at[0, "audio"] = {
-            "path": None,
-            "array": np.zeros(16000, dtype=np.float32),
-            "sampling_rate": 16000,
-        }
+        audio_rows = [
+            {
+                "array": np.zeros(16000, dtype=np.float32),
+                "sampling_rate": 16000,
+            }
+        ]
         output = tmp_path / "manifest.jsonl"
         audio_dir = tmp_path / "wav"
 
-        with patch(_PATCH_TARGET, return_value=_mock_load_dataset(df)):
+        with patch(_PATCH_TARGET, return_value=_mock_load_dataset(df, audio_rows)):
             build_manifest_from_coraa(output, audio_dir)
 
         lines = output.read_text().strip().split("\n")
