@@ -34,6 +34,12 @@ class HuggingFaceBackboneAdapter:
         self._encoder: Optional[Callable[..., Dict[str, torch.Tensor]]] = None
         self._model_type = None
 
+        # ``_tts_wrapper`` holds the high-level ``Qwen3TTSModel`` when running
+        # Qwen3-TTS.  It exposes ``generate_custom_voice()`` etc.  ``self.model``
+        # always points to the *raw* HF ``nn.Module`` so that forward-hooks
+        # registered by ``BackboneFeatureExtractor`` fire correctly.
+        self._tts_wrapper: Any = None
+
         qwen_tts_available = False
         try:
             from qwen_tts.core.models import Qwen3TTSConfig, Qwen3TTSForConditionalGeneration, Qwen3TTSProcessor
@@ -57,8 +63,18 @@ class HuggingFaceBackboneAdapter:
                 raise RuntimeError(
                     "Checkpoint requires qwen-tts. Install with: pip install -U qwen-tts"
                 )
-            self.processor = AutoProcessor.from_pretrained(cfg.checkpoint, fix_mistral_regex=True)
-            self.model = AutoModel.from_pretrained(cfg.checkpoint, **model_kwargs).to(cfg.device)
+            # Use the high-level Qwen3TTSModel wrapper which provides
+            # ``generate_custom_voice()``.  The wrapper internally calls
+            # AutoModel + AutoProcessor, so we do NOT call them separately.
+            from qwen_tts import Qwen3TTSModel as _Qwen3TTSWrapper
+
+            device_map = cfg.device if cfg.device != "cpu" else None
+            self._tts_wrapper = _Qwen3TTSWrapper.from_pretrained(
+                cfg.checkpoint, device_map=device_map, **model_kwargs,
+            )
+            # Expose the raw HF model for hook registration (nn.Module).
+            self.model = self._tts_wrapper.model
+            self.processor = self._tts_wrapper.processor
         else:
             self.tokenizer = AutoTokenizer.from_pretrained(cfg.checkpoint)
             self.model = AutoModelForSeq2SeqLM.from_pretrained(cfg.checkpoint, **model_kwargs).to(cfg.device)
@@ -110,8 +126,11 @@ class HuggingFaceBackboneAdapter:
             if self._model_type == "qwen3_tts":
                 mode = inputs.get("mode", "custom_voice")
                 if mode == "custom_voice":
-                    # Call Qwen3-TTS generation API
-                    self.model.generate_custom_voice(
+                    # Call Qwen3-TTS generation via the high-level wrapper.
+                    # ``self._tts_wrapper.generate_custom_voice()`` internally
+                    # calls ``self.model.generate()`` which triggers all hooks
+                    # registered on the raw HF model's sub-modules.
+                    self._tts_wrapper.generate_custom_voice(
                         text=inputs["text"],
                         language=inputs.get("language", "Portuguese"),
                         speaker=inputs.get("speaker", "ryan"),
