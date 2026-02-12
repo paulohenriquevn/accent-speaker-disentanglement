@@ -104,6 +104,51 @@ def map_state_to_region(state: str) -> str | None:
     return _STATE_TO_REGION_FOLDED.get(state.casefold())
 
 
+def _extract_audio(audio_data: object) -> tuple:
+    """Extract (numpy_array, sample_rate) from an HF audio column value.
+
+    Handles three cases transparently:
+    1. Plain ``dict`` with ``"array"`` and ``"sampling_rate"`` keys (datasets < 4).
+    2. A ``torchcodec.AudioDecoder`` wrapped by ``datasets`` (datasets >= 4)
+       that supports ``["array"]`` / ``["sampling_rate"]`` subscript access.
+    3. A raw ``torchcodec.AudioDecoder`` whose wrapper does **not** support
+       subscript access — fall back to the native ``.get_all_samples()`` API.
+
+    Returns
+    -------
+    tuple[numpy.ndarray, int]
+        A 1-D float32 audio array and its sample rate.
+    """
+    import numpy as np
+
+    # Case 1: plain dict (older datasets versions)
+    if isinstance(audio_data, dict):
+        return np.asarray(audio_data["array"]), int(audio_data["sampling_rate"])
+
+    # Case 2: try the subscript interface added by the datasets wrapper
+    try:
+        arr = audio_data["array"]  # type: ignore[index]
+        sr = audio_data["sampling_rate"]  # type: ignore[index]
+        return np.asarray(arr), int(sr)
+    except (TypeError, KeyError):
+        pass
+
+    # Case 3: raw torchcodec AudioDecoder — use native API
+    if hasattr(audio_data, "get_all_samples"):
+        samples = audio_data.get_all_samples()  # type: ignore[union-attr]
+        y = samples.data.cpu().numpy()
+        # Collapse channel dims to mono if needed
+        if y.ndim > 1:
+            y = np.mean(y, axis=tuple(range(y.ndim - 1)))
+        sr = int(samples.sample_rate)
+        return y, sr
+
+    raise TypeError(
+        f"Unsupported audio type from HF dataset: {type(audio_data)}. "
+        "Expected dict, datasets AudioDecoder, or torchcodec AudioDecoder."
+    )
+
+
 def build_manifest_from_coraa(
     output_path: str | Path,
     audio_dir: str | Path,
@@ -247,14 +292,14 @@ def build_manifest_from_coraa(
         wav_path = speaker_dir / f"{utt_id}.wav"
 
         # Export audio: the HF dataset decodes the audio column on access.
-        # Older datasets versions return a dict {"array": ..., "sampling_rate": ...}.
-        # Newer versions (4+) return a torchcodec AudioDecoder object that
-        # supports the same ["array"] / ["sampling_rate"] subscript interface.
+        # Depending on the installed ``datasets`` version the value can be:
+        #   a) a plain dict  {"array": np.ndarray, "sampling_rate": int}
+        #   b) a torchcodec ``AudioDecoder`` object (datasets >= 4)
+        # We handle both explicitly so the code works regardless of version.
         if not wav_path.exists():
             try:
                 audio_data = hf_row["audio"]
-                audio_array = np.asarray(audio_data["array"])
-                sample_rate = int(audio_data["sampling_rate"])
+                audio_array, sample_rate = _extract_audio(audio_data)
                 sf.write(str(wav_path), audio_array, sample_rate)
                 written += 1
             except Exception as exc:
